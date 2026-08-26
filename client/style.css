@@ -1,0 +1,300 @@
+body {
+	margin: 0px;
+	overflow: hidden;
+}
+canvas {
+	display: block;
+}
+
+#debugInfo {
+	position: fixed;
+	top: 10px;
+	left: 10px;
+	background: rgba(0, 0, 0, 0.7);
+	color: #0f0;
+	font-family: monospace;
+	font-size: 12px;
+	padding: 10px;
+	border-radius: 6px;
+	white-space: pre;
+	pointer-events: none;
+	z-index: 999;
+}
+/* ==========================================================================
+リサイズ用
+ ==========================================================================
+*/
+.resize-handle {
+	position: absolute;
+	width: 12px;
+	height: 12px;
+	z-index: 10;
+}
+.resize-handle.n {
+	top: 0;
+	left: 12px;
+	right: 12px;
+	height: 6px;
+	width: auto;
+	cursor: n-resize;
+}
+.resize-handle.s {
+	bottom: 0;
+	left: 12px;
+	right: 12px;
+	height: 6px;
+	width: auto;
+	cursor: s-resize;
+}
+.resize-handle.w {
+	left: 0;
+	top: 12px;
+	bottom: 12px;
+	width: 6px;
+	height: auto;
+	cursor: w-resize;
+}
+.resize-handle.e {
+	right: 0;
+	top: 12px;
+	bottom: 12px;
+	width: 6px;
+	height: auto;
+	cursor: e-resize;
+}
+.resize-handle.nw {
+	top: 0;
+	left: 0;
+	cursor: nw-resize;
+}
+.resize-handle.ne {
+	top: 0;
+	right: 0;
+	cursor: ne-resize;
+}
+.resize-handle.sw {
+	bottom: 0;
+	left: 0;
+	cursor: sw-resize;
+}
+.resize-handle.se {
+	bottom: 0;
+	right: 0;
+	cursor: se-resize;
+}
+
+/* ==========================================================================
+   サイバー風チャットバー
+   ========================================================================== */
+#chat-container {
+	position: absolute;
+	bottom: 20px;
+	left: 20px;
+	width: 360px;
+	height: 280px;
+	/* 💡 グラスモフィズム：背景をぼかして高級感のある半透明に */
+	background-color: rgba(10, 15, 25, 0.95);
+	backdrop-filter: blur(12px);
+	-webkit-backdrop-filter: blur(12px);
+	/* 極細の硬質なボーダーと、かすかな近未来風の青い光 */
+	border: 1px solid rgba(0, 212, 255, 0.2);
+	box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37),
+		0 0 15px rgba(0, 212, 255, 0.05);
+	color: #e0e6ed;
+	font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+	display: flex;
+	flex-direction: column;
+	/*border-radius: 8px; 丸み*/
+	z-index: 1000;
+	padding: 3px;
+	box-sizing: border-box;
+	/* resize: none; */
+	overflow: hidden;
+	min-width: 280px;
+	min-height: 180px;
+	transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+/* アクティブ感を出すため、コンテナホバー時に少し光らせる */
+#chat-container:hover {
+	border-color: rgba(0, 212, 255, 0.4);
+	box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.45),
+		0 0 20px rgba(0, 212, 255, 0.1);
+}
+/* タイトルバー（ヘッダー） */
+#chat-header {
+	padding: 3px;
+	background-color: rgba(0, 212, 255, 0.1);
+	border-bottom: 1px solid rgba(0, 212, 255, 0.2);
+	margin-bottom: 5px;
+	cursor: move;
+	font-size: 9px;
+	font-weight: 900;
+	letter-spacing: 0.1em;
+	text-align: center;
+	text-transform: uppercase;
+	color: #00fff2;
+	border-radius: 4px 4px 0 0;
+	user-select: none;
+	position: relative;
+}
+/* チャットログエリア */
+#chat-log {
+	flex-grow: 1;
+	overflow-y: auto;
+	margin-bottom: 4px;
+	font-size: 11px;
+	line-height: 1.5;
+	word-break: break-all;
+	padding: 0 4px 0 4px;
+	/* 上、右、下、左 */
+}
+/* スクロールバーもスタイリッシュに */
+#chat-log::-webkit-scrollbar {
+	width: 4px;
+}
+#chat-log::-webkit-scrollbar-track {
+	background: transparent;
+}
+#chat-log::-webkit-scrollbar-thumb {
+	background: rgba(0, 212, 255, 0.3);
+	border-radius: 10px;
+}
+/* 入力エリア */
+#chat-input-area {
+	display: flex;
+	gap: 4px;
+}
+/* 入力フィールド */
+#chat-input {
+	flex-grow: 1;
+	background-color: rgba(0, 0, 0, 0.4);
+	border: 1px solid rgba(255, 255, 255, 0.15);
+	color: #ffffff;
+	padding: 8px 5px;
+	/*border-radius: 6px;*/
+	font-size: 13px;
+	outline: none;
+	transition: all 0.2s ease;
+}
+/* フォーカス時に青くフラッシュ */
+#chat-input:focus {
+	border-color: #10e2e9;
+	background-color: rgba(0, 0, 0, 0.6);
+	box-shadow: 0 0 8px rgba(9, 231, 46, 0.959);
+}
+/* 送信ボタン */
+#chat-send-btn {
+	background: linear-gradient(135deg, #00d4ff 0%, #0072ff 100%);
+	color: white;
+	border: none;
+	padding: 5px 5px;
+	/* border-radius: 6px; */
+	font-size: 12px;
+	font-weight: bold;
+	cursor: pointer;
+	box-shadow: 0 2px 8px rgba(0, 114, 255, 0.3);
+	transition: all 0.2s ease;
+}
+/* ボタンのホバーエフェクト */
+#chat-send-btn:hover {
+	transform: translateY(-1px);
+	box-shadow: 0 4px 12px rgba(0, 212, 255, 0.5);
+	filter: brightness(1.1);
+}
+#chat-send-btn:active {
+	transform: translateY(1px);
+}
+/* 閉じるボタン */
+#chat-close-btn {
+	position: absolute;
+	right: 4px;
+	top: 50%;
+	transform: translateY(-50%);
+	background: transparent;
+	border: none;
+	color: #00fff2;
+	font-size: 14px;
+	cursor: pointer;
+	line-height: 1;
+	padding: 0 2px;
+	transition: color 0.2s ease;
+}
+#chat-close-btn:hover {
+	color: #ff4466;
+}
+
+/* ==========================================================================
+   チャットバブル
+   ========================================================================== */
+.chat-bubble {
+	position: absolute;
+	/* 💡 JavaScriptで計算した中心が、吹き出しの「下の尖った部分」になるように調整 */
+	transform: translate(-50%, -100%);
+
+	/* 見た目の装飾 */
+	background-color: rgba(255, 255, 255, 0.9);
+	/* ほんのり透ける白 */
+	color: #333333;
+	/* 文字は濃いグレーで読みやすく */
+	padding: 8px 14px;
+	/* 内側の余白 */
+	border-radius: 12px;
+	/* 角丸 */
+	font-size: 14px;
+	font-family: sans-serif;
+	font-weight: bold;
+	white-space: nowrap;
+	/* 文字が勝手に改行されないようにする */
+
+	/* 縁取り 
+	box-shadow: 0 4px 6px rgba(233, 212, 26, 0.856), 0 0 0 2px #d4084c;*/
+
+	/* Three.jsのマウス操作を邪魔しない */
+	pointer-events: none;
+
+	/* 表示されるときのアニメーション（フワッと出る） */
+	animation: popIn 0.15s ease-out forwards;
+}
+
+/* 吹き出しの下の三角（矢印） */
+.aaaachat-bubble::after {
+	content: '';
+	position: absolute;
+	bottom: -8px;
+	/* 枠線の太さに合わせて微調整 */
+	left: 50%;
+	transform: translateX(-50%);
+
+	/* 三角形を作るテクニック */
+	border-left: 8px solid transparent;
+	border-right: 8px solid transparent;
+	border-top: 8px solid #333333;
+	/* 外枠と同じ色にする */
+}
+
+/* 吹き出しの下の三角の内側（白） */
+.aaachat-bubble::before {
+	content: '';
+	position: absolute;
+	bottom: -6px;
+	left: 50%;
+	transform: translateX(-50%);
+	z-index: 1;
+
+	border-left: 7px solid transparent;
+	border-right: 7px solid transparent;
+	border-top: 7px solid rgba(255, 255, 255, 0.9);
+	/* 背景と同じ色 */
+}
+
+/* ポップアップアニメーション */
+@keyframes popIn {
+	0% {
+		transform: translate(-50%, -80%) scale(0.8);
+		opacity: 0;
+	}
+	100% {
+		transform: translate(-50%, -100%) scale(1);
+		opacity: 1;
+	}
+}
