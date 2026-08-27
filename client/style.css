@@ -1,9 +1,11 @@
 body {
+	background-color: #000;
 	margin: 0px;
 	overflow: hidden;
 }
 canvas {
 	display: block;
+	margin: 0 auto;
 }
 
 #debugInfo {

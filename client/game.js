@@ -215,6 +215,7 @@ function gameLoop()
 	const screenX = player.x - camera.x;
 	const screenY = player.y - camera.y;
 
+	//現在の描画を一時保存
 	ctx.save();
 
 	if (flip)
@@ -237,6 +238,7 @@ function gameLoop()
 		);
 	}
 
+	//復元
 	ctx.restore();
 
 	requestAnimationFrame(gameLoop);

@@ -64,7 +64,7 @@ export function log_rgb(r, g, b, text)
 }
 
 //色log
-export function logc(color, text)
+export function print(color, text)
 {
 	if (text === undefined)
 		text = color;
@@ -73,7 +73,7 @@ export function logc(color, text)
 	console.log(result);
 }
 
-export function prtc(text)
+export function print2(text)
 {
 	if (!text.endsWith("\x1b[0m")) text += "\x1b[0m";
 	console.log(text);

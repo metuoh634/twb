@@ -1,5 +1,5 @@
 //ポート番号
-export const PORT = 31534;
+export const PORT = 5135;
 
 //通信のタイプ
 export const PACKET_TYPE =
