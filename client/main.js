@@ -149,16 +149,19 @@ function update(delta)
 	ctx.clearRect(position.x, position.y, player.frameWidth, player.frameHeight);
 
 	// スプライトシートから該当コマだけを切り出して描画する
-	ctx.save();
 	if (next.flip)
 	{
+		//描画状態（座標系の回転・拡大縮小・移動、透過度、塗りつぶし色など）をスタックに保存・復元するための命令
+		ctx.save();
 		ctx.scale(-1, 1);
 		ctx.drawImage(
 			player.img,
 			currentFrame * player.frameWidth, 0, player.frameWidth, player.frameHeight,
 			-position.x - player.frameWidth, position.y, player.frameWidth, player.frameHeight
 		);
-	} else
+		ctx.restore();
+	}
+	else
 	{
 		ctx.drawImage(
 			player.img,
@@ -166,7 +169,7 @@ function update(delta)
 			position.x, position.y, player.frameWidth, player.frameHeight
 		);
 	}
-	ctx.restore();
+
 
 }
 
