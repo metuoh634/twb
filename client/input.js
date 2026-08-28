@@ -1,3 +1,4 @@
+import * as engine from './engine.js';
 export const keys = {};
 export const keysPress = {};
 //export const keys = new Proxy({}, {	get: (target, key) => key in target ? target[key] : false});
@@ -162,7 +163,7 @@ document.addEventListener('contextmenu', (e) =>
 // 画面リサイズへの対応
 window.addEventListener('resize', () =>
 {
-	//engine.repaint();
+	engine.repaint();
 });
 
 // ページ読み込み時

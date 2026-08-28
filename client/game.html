@@ -5,17 +5,26 @@
 	<meta charset="UTF-8">
 	<link rel="icon" href="data:,">
 	<title>2D Action RPG Canvas</title>
-
-	<style src="./game.css"></style>
+	<link rel="stylesheet" href="game.css">
 </head>
 
 <body>
 
 	<canvas id="gameCanvas"></canvas>
 
-	<script type="module" src="./game.js"></script>
-	</script>
 
+	<!--チャットバー-->
+	<div id="chat-container">
+		<div id="chat-header">チャット<button id="chat-close-btn">×</button></div>
+		<div id="chat-log"></div>
+		<div id="chat-input-area">
+			<input type="text" id="chat-input" placeholder="メッセージを入力...（Enterで送信）" maxlength="50">
+			<button id="chat-send-btn">送信</button>
+		</div>
+	</div>
+
+	<!-- 最後に書く -->
+	<script type="module" src="./game.js"></script>
 </body>
 
 </html>

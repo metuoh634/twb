@@ -1,8 +1,8 @@
+import { canvas, ctx } from './engine.js';
+import * as engine from './engine.js';
 import { keys, keysPress, mouseInfo } from './input.js';
 import { print } from '../shared/sub.js';
 
-const canvas = document.getElementById("gameCanvas");
-const ctx = canvas.getContext("2d");
 
 const SPRITE_WIDTH = 70;
 const SPRITE_HEIGHT = 95;
@@ -24,7 +24,7 @@ const MAP_HEIGHT = 4500;
 const assets = {};
 const assetPaths =
 {
-	//map: '/assets/maps/map.png',
+	map: '/assets/maps/map.png',
 
 	run_backside: '/assets/player/run_backside.png',
 	run_backward: '/assets/player/run_backward.png',
@@ -59,9 +59,18 @@ function loadImage(src)
 
 async function init()
 {
+	engine.init();
+
 	//ループで一気に Image オブジェクトを作る
 	for (const [key, path] of Object.entries(assetPaths))
 	{
+		// map画像は単体画像として扱う
+		if (path.includes('map'))
+		{
+			assets.map = { img: await loadImage(path) };
+			continue;
+		}
+
 		assets[key] = [];
 		assets[key].img = await loadImage(path);
 		assets[key].frameWidth = SPRITE_WIDTH;
@@ -123,6 +132,28 @@ function getKeyAnimeState()
 //画面更新
 function update(delta)
 {
+	// 1. フレームの最初にキャンバス全体をクリア
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+	// 2. 背景マップを画面（キャンバス）全体いっぱいに表示
+	let map = assets.map.img;
+
+	// キャンバスの画面サイズに合わせて切り取る幅・高さを決定
+	const sourceWidth = canvas.width;
+	const sourceHeight = canvas.height;
+
+	// マップ画像の中央を基準にした切り出し開始位置(x, y)を計算
+	const sourceX = (map.width - sourceWidth) / 2;
+	const sourceY = (map.height - sourceHeight) / 2;
+
+	ctx.drawImage(
+		map,
+		sourceX, sourceY, sourceWidth, sourceHeight, // 元画像の中央部分を切り抜き
+		0, 0, canvas.width, canvas.height            // 画面全体に1:1の等倍サイズで描画
+	);
+
+
+	//プレイヤー描画
 	let next = getKeyAnimeState();
 	if (next.state != state)
 	{
