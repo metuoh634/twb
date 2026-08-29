@@ -1,6 +1,6 @@
 // client.js
 import { PACKET_TYPE, PORT } from '/shared/config.js';
-import { addLog } from './utils.js';
+import { addLog } from '../shared/utils.js';
 //クライアントwsはnode標準搭載
 
 let ws = null;

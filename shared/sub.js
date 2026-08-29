@@ -1,6 +1,11 @@
 // 文字色・背景色などのエスケープコード一覧
 // ※Pythonの \033 とJavaScriptの \x1b は同じ「ESCシーケンス」を表す書き方です
 const COLORS = {
+
+	info: "\x1b[34m",
+	warning: "\x1b[33m",
+	error: "\x1b[31m",
+
 	// 文字色
 	black: "\x1b[30m",
 	red: "\x1b[31m",
@@ -77,4 +82,106 @@ export function print2(text)
 {
 	if (!text.endsWith("\x1b[0m")) text += "\x1b[0m";
 	console.log(text);
+}
+
+//ログエリアに文字追加
+const chatLog = document.getElementById('chat-log');
+
+//色付きdiv作成
+export function createTypeFont(type, message)
+{
+	const ctype = type.toUpperCase();
+	let prefix = "";
+	const mes = document.createElement('div');
+
+	/*
+	// 直接 body に追加する場合は、3D画面の手前に浮かせるために絶対配置が必要です！
+	document.body.appendChild(msgDiv);
+	
+	msgDiv.style.position = 'absolute';
+	msgDiv.style.top = '10px';
+	msgDiv.style.left = '10px';
+	msgDiv.style.zIndex = '100'; // 3D画面（キャンバス）より手前に出す設定
+	*/
+
+	// 見た目の装飾だけ残す
+	mes.style.backgroundColor = 'rgba(0,0,0,0.8)';
+	mes.style.fontFamily = 'sans-serif';
+	mes.style.borderRadius = '4px'; // ちょっと角を丸くすると綺麗になります
+
+	if (ctype === 'INFO')
+		mes.style.color = 'white';
+	else if (ctype === 'WARNING')
+		mes.style.color = 'yellow';
+	else if (ctype === 'ERROR')
+		mes.style.color = 'red';
+
+	mes.innerText = message;
+	//mes.innerText = `${prefix} ${message}`;
+
+	return mes;
+}
+
+//typeのconsoleを取得
+export function typeConsole(type)
+{
+	const ctype = type.toUpperCase();
+	let consoleFunc = console.log
+	if (ctype === 'INFO')
+		consoleFunc = console.log;
+	else if (ctype === 'WARNING')
+		consoleFunc = console.warn; //ちょっとまずい
+	else if (ctype === 'ERROR')
+		consoleFunc = console.error; //致命的エラー
+	return consoleFunc;
+}
+
+export function addLog(type, message, logArea = chatLog)
+{
+	//タイプコンソール取得
+	let consoleFunc = typeConsole(type);
+
+	//色付き文字のdiv作成
+	let msgDiv = createTypeFont(type, message);
+
+	if (logArea)
+	{
+		logArea.appendChild(msgDiv);
+		logArea.scrollTop = logArea.scrollHeight;
+	}
+
+	//conlose.log
+	consoleFunc(message);
+
+	// INFOやWARNINGが画面に残り続けると邪魔なので、5秒後に自動で消えるようにする
+	/*if (ctype !== 'ERROR')
+	{
+		setTimeout(() =>
+		{
+			msgDiv.remove();
+		}, 5000); // 5000ミリ秒 = 5秒
+	}*/
+}
+
+let debugMessage;
+export function debugLog(message)
+{
+	if (debugMessage != message)
+	{
+		debugMessage = message;
+		addLog('INFO', debugMessage);
+	}
+}
+
+//丸め処理
+export function roundTo(value, digits)
+{
+	const factor = Math.pow(10, digits);
+	return Math.round(value * factor) / factor;
+}
+
+//2つの数値がほぼ等しいか判定する（浮動小数点誤差を許容する）
+export function nearlyEqual(a, b, epsilon = 1e-4)
+{
+	return Math.abs(a - b) <= epsilon;
 }

@@ -1,15 +1,19 @@
 import { canvas, ctx } from './engine.js';
+import * as windows from './windows.js';
 import * as engine from './engine.js';
+import * as input from './input.js';
 import { keys, keysPress, mouseInfo } from './input.js';
-import { print } from '../shared/sub.js';
-
+import { print, addLog } from '../shared/sub.js';
+import * as utils2 from '../shared/utils2.js';
 
 const SPRITE_WIDTH = 70;
 const SPRITE_HEIGHT = 95;
 const ANIMATION_SPEED = 10; 		// フレーム更新の速さ（値が小さいほど速い）
 
 
-let state = "idle_forward";
+let state = "idle";
+let direction = "forward";
+let flip = false;
 const position = { x: 50, y: 50 };	//プレイヤー位置
 let currentFrame = 0; 				// 何コマ目を表示しているか(0番目からスタート)
 let frameSpeed = 15;				// 何回描画するごとにコマを進めるか(値を大きくすると動きがゆっくりになる)
@@ -24,110 +28,52 @@ const MAP_HEIGHT = 4500;
 const assets = {};
 const assetPaths =
 {
-	map: '/assets/maps/map.png',
+	map: '/assets/MAP/カウル.png',
 
-	run_backside: '/assets/player/run_backside.png',
-	run_backward: '/assets/player/run_backward.png',
-	run_forside: '/assets/player/run_forside.png',
-	run_forward: '/assets/player/run_forward.png',
-	run_side: '/assets/player/run_side.png',
+	run_backside: '/assets/player/マキシミン/run/backside.png',
+	run_backward: '/assets/player/マキシミン/run/backward.png',
+	run_forside: '/assets/player/マキシミン/run/forside.png',
+	run_forward: '/assets/player/マキシミン/run/forward.png',
+	run_side: '/assets/player/マキシミン/run/side.png',
 
-	idle_backside: '/assets/player/idle_backside.png',
-	idle_backward: '/assets/player/idle_backward.png',
-	idle_forside: '/assets/player/idle_forside.png',
-	idle_forward: '/assets/player/idle_forward.png',
-	idle_side: '/assets/player/idle_side.png'
+	idle_backside: '/assets/player/マキシミン/idle/backside.png',
+	idle_backward: '/assets/player/マキシミン/idle/backward.png',
+	idle_forside: '/assets/player/マキシミン/idle/forside.png',
+	idle_forward: '/assets/player/マキシミン/idle/forward.png',
+	idle_side: '/assets/player/マキシミン/idle/side.png'
 };
 
-//画像イメージ同期処理
-function loadImage(src)
-{
-	return new Promise((resolve, reject) =>
-	{
-		const img = new Image();
-		img.onload = () =>
-		{
-			resolve(img);
-		}
-		img.onerror = (err) =>
-		{
-			reject(err);
-		}
-		img.src = src;
-	});
-};
+
 
 async function init()
 {
 	engine.init();
+	windows.init();
 
 	//ループで一気に Image オブジェクトを作る
 	for (const [key, path] of Object.entries(assetPaths))
 	{
-		// map画像は単体画像として扱う
-		if (path.includes('map'))
+		try
 		{
-			assets.map = { img: await loadImage(path) };
-			continue;
-		}
+			// map画像は単体画像として扱う
+			if (path.includes('map'))
+			{
+				assets.map = { img: await utils2.loadImage(path) };
+				continue;
+			}
 
-		assets[key] = [];
-		assets[key].img = await loadImage(path);
-		assets[key].frameWidth = SPRITE_WIDTH;
-		assets[key].frameHeight = SPRITE_HEIGHT;
-		assets[key].frameCount = assets[key].img.width / assets[key].frameWidth;
+			assets[key] = [];
+			assets[key].img = await utils2.loadImage(path);
+			assets[key].frameWidth = SPRITE_WIDTH;
+			assets[key].frameHeight = SPRITE_HEIGHT;
+			assets[key].frameCount = assets[key].img.width / assets[key].frameWidth;
+		}
+		catch (e)
+		{
+			addLog("ERROR", "ファイル読み込みエラー：" + key + " " + e.message);
+		}
 	}
 }
-
-// 角度から「使用する画像」と「反転フラグ」を決定する関数
-/*
-function getAngleState()
-{
-	const a = this.angle;
-	let key = 'forward';
-	let flip = false;
-
-	// 8方向の判定 (45度ずつ分割)
-	if (a >= 22.5 && a < 67.5) { key = 'forside'; flip = true; }  // 右下（左下を反転）
-	else if (a >= 67.5 && a < 112.5) key = 'forward';               // 下
-	else if (a >= 112.5 && a < 157.5) key = 'forside';               // 左下
-	else if (a >= 157.5 && a < 202.5) key = 'side';                  // 左
-	else if (a >= 202.5 && a < 247.5) key = 'backside';              // 左上
-	else if (a >= 247.5 && a < 292.5) key = 'backward';              // 上
-	else if (a >= 292.5 && a < 337.5) { key = 'backside'; flip = true; }// 右上（左上を反転）
-	else { key = 'side'; flip = true; }     // 右（左を反転）
-
-	// 例: 'run_forside' や 'idle_forward' などのキー名を生成
-	const imgKey = `${this.state}_${key}`;
-	return { img: assets[imgKey], flip: flip };
-}*/
-
-function getKeyAnimeState()
-{
-	let stat = "idle"
-	let direction = 'forward';
-	let flip = false;
-
-	if (keysPress.w || keysPress.a || keysPress.s || keysPress.d)
-		stat = "run";
-
-
-	// 8方向の判定 (45度ずつ分割)
-	if (keysPress.s && keysPress.d) { direction = 'forside'; flip = true; }  // 右下（左下を反転）
-	else if (keysPress.a && keysPress.s) direction = 'forside';               // 左下
-	else if (keysPress.a && keysPress.w) direction = 'backside';              // 左上
-	else if (keysPress.d && keysPress.w) { direction = 'backside'; flip = true; }// 右上（左上を反転）
-	else if (keysPress.w) direction = 'backward';              // 上
-	else if (keysPress.a) direction = 'side';                  // 左
-	else if (keysPress.s) direction = 'forward';               // 下
-	else if (keysPress.d) { direction = 'side'; flip = true; }     // 右（左を反転）
-
-	return { state: stat + "_" + direction, flip: flip };
-	// 例: 'run_forside' や 'idle_forward' などのキー名を生成
-	//const imgKey = `${this.state}_${key}`;
-	//return { img: assets[imgKey], flip: flip };
-}
-
 
 //画面更新
 function update(delta)
@@ -154,14 +100,20 @@ function update(delta)
 
 
 	//プレイヤー描画
-	let next = getKeyAnimeState();
-	if (next.state != state)
+
+	let next = input.getDirection();
+	let nextState = input.isMoving() ? "run" : "idle";
+	let nextkey = nextState + "_" + next.direction;
+	if (nextState != state || flip != next.flip || direction != next.direction)
 	{
+		//addLog("current:" + direction + " next:" + next.direction);
 		currentFrame = 0;
-		state = next.state;
+		state = nextState;
+		direction = next.direction;
+		flip = next.flip;
 	}
 
-	let player = assets[state];
+	let player = assets[state + "_" + direction];
 
 	//実際に経過した時間(delta)を加算する
 	frameTimer += delta;
@@ -180,7 +132,7 @@ function update(delta)
 	ctx.clearRect(position.x, position.y, player.frameWidth, player.frameHeight);
 
 	// スプライトシートから該当コマだけを切り出して描画する
-	if (next.flip)
+	if (flip)
 	{
 		//描画状態（座標系の回転・拡大縮小・移動、透過度、塗りつぶし色など）をスタックに保存・復元するための命令
 		ctx.save();

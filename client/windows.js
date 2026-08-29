@@ -1,5 +1,5 @@
 //windows.js
-import { addLog } from './utils.js';
+import { addLog } from '../shared/sub.js';
 
 export let activeWindow = null;
 export let windows = [];
@@ -224,7 +224,7 @@ class WindowController
 }
 
 //ウィンドウクラス追加 呼び出し
-export function init(targetSelector, headerSelector, closebtnSelector)
+export function init()
 {
 	chatWindow = new WindowController('#chat-container', '#chat-header', '#chat-close-btn');
 	windows.push(chatWindow);

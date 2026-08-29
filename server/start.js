@@ -1,7 +1,7 @@
 import inspector from 'node:inspector'; // 追加：デバッガが接続されているか調べるため
-//import * as dbs from './db_sync.js';
 import * as web from './web.js';
 import * as ws from './ws_bin_server.js'; //webserverに相乗り
+//import * as dbs from './db_sync.js';
 
 //デバッグ情報
 //const isDebugging = inspector.url() !== undefined; //デバッグ実行

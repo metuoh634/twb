@@ -4,9 +4,7 @@ import fsp from 'node:fs/promises';
 import { fileURLToPath } from 'url';
 import path from 'path';
 import { PORT } from '../shared/config.js';
-//import * as routes from './start.js';
 
-//const PORT = 5500;
 export let server = null;
 export let routeAPI = null;
 
