@@ -34,33 +34,6 @@ export function clearKeys()
 		delete keys[key];
 }
 
-
-//移動しているかどうか
-export function isMoving(key = keysPress)
-{
-	return (key.w || key.a || key.s || key.d);
-}
-
-//キーから角度取得
-export function getDirection(key = keysPress)
-{
-	let direction = 'forward';
-	let flip = false;
-
-	// 8方向の判定 (45度ずつ分割)
-	if (key.s && key.d) { direction = 'forside'; flip = true; }			// 右下（左下を反転）
-	else if (key.a && key.s) direction = 'forside';						// 左下
-	else if (key.a && key.w) direction = 'backside';					// 左上
-	else if (key.d && key.w) { direction = 'backside'; flip = true; }	// 右上（左上を反転）
-	else if (key.w) direction = 'backward';									// 上
-	else if (key.a) direction = 'side';										// 左
-	else if (key.s) direction = 'forward';									// 下
-	else if (key.d) { direction = 'side'; flip = true; }						// 右（左を反転）
-
-	return { direction: direction, flip: flip };
-}
-
-
 //マウス==============================================================
 
 
