@@ -15,14 +15,28 @@
 
 	<canvas id="gameCanvas"></canvas>
 
+	<!-- tw chat -->
+	<div id="chatArea">
+		<div id="chatTopBar"><img src="./assets/UI/ChatBar/topBar.png"></div>
+		<div id="chatLog">
+			<div id="chatLogText"></div>
 
-	<!--チャットバー-->
-	<div id="chat-container">
-		<div id="chat-header">チャット<button id="chat-close-btn">×</button></div>
-		<div id="chat-log"></div>
-		<div id="chat-input-area">
-			<input type="text" id="chat-input" placeholder="メッセージを入力...（Enterで送信）" maxlength="50">
-			<button id="chat-send-btn">送信</button>
+			<div id="chatScrollArea">
+				<img id="chatScrollUp" src="./assets/UI/ChatBar/scrollUp.png" alt="上へ">
+				<div id="chatScrollTrack"><img src="./assets/UI/ChatBar/scrollBar.png" alt="つまみ"></div>
+				<img id="chatScrollDown" src="./assets/UI/ChatBar/scrollDown.png" alt="下へ">
+			</div>
+		</div>
+		<div id="chatUnder">
+			<div id="chatOpen"><img src="./assets/UI/ChatBar/open.png" alt="開く"></div>
+			<div id="chatWhisperUser"><img src="./assets/UI/ChatBar/whisperUser.png" alt="相手"></div>
+			<div id="chatInput"><img src="./assets/UI/ChatBar/input.png" alt="入力"></div>
+			<div id="chatMail"><img src="./assets/UI/ChatBar/mail.png" alt="メール"></div>
+			<div id="chatMemo"><img src="./assets/UI/ChatBar/memo.png" alt="メモ"></div>
+			<div id="chatMessanger"><img src="./assets/UI/ChatBar/messanger.png" alt="メッセンジャー"></div>
+			<div id="chatDM"><img src="./assets/UI/ChatBar/dm.png" alt="1:1チャット"></div>
+			<div id="chatFixedText"><img src="./assets/UI/ChatBar/fixedText.png" alt="定型文"></div>
+			<div id="chatEmote"><img src="./assets/UI/ChatBar/emote.png" alt="絵文字"></div>
 		</div>
 	</div>
 

@@ -1,3 +1,14 @@
+//ctx.drawImage関数
+//img	CanvasImageSource	描画する画像
+//sx	number	元画像の切り抜き開始位置（X座標 / Source X）
+//sy	number	元画像の切り抜き開始位置（Y座標 / Source Y）
+//sw	number	元画像から切り抜く幅（Source Width）
+//sh	number	元画像から切り抜く高さ（Source Height）
+//dx	number	Canvas上の描画開始位置（X座標 / Destination X）
+//dy	number	Canvas上の描画開始位置（Y座標 / Destination Y）
+//dw	number	Canvas上に描画する幅（Destination Width）
+//dh	number	Canvas上に描画する高さ（Destination Height）
+
 //画像イメージ同期処理
 export function loadImage(src)
 {

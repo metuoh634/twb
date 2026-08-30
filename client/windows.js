@@ -14,6 +14,17 @@ export const chatContainer = document.getElementById('chat-container');
 export const chatHeader = document.getElementById('chat-header');
 export const chatCloseBtn = document.getElementById('chat-close-btn');
 
+//ウィンドウクラス追加 呼び出し
+export function init()
+{
+	//chatWindow = new WindowController('#chat-container', '#chat-header', '#chat-close-btn');
+	//chatWindow = new WindowController('#chatArea', '#chatLog', null);
+
+	chatWindow = new WindowController('#chatArea', '#chatLogText', null, '#chatTopBar', 'n', 300, 90);//minWidth = 280, minHeight = 180)
+	windows.push(chatWindow);
+}
+
+
 
 //ウィンドウズクラス
 class WindowController
@@ -22,11 +33,15 @@ class WindowController
 	 * @param {string|HTMLElement} targetSelector - 動かしたいウィンドウの要素、またはセレクタ
 	 * @param {string|HTMLElement} headerSelector - ドラッグのトリガーになるヘッダー要素（任意）
 	 */
-	constructor(targetSelector, headerSelector = null, closebtnSelector = null)
+	constructor(targetSelector, headerSelector = null, closebtnSelector = null,
+		resizeBarSelector = null, resizeBarDir = 'n', minWidth = 280, minHeight = 180)
 	{
 		this.container = typeof targetSelector === 'string' ? document.querySelector(targetSelector) : targetSelector;
 		this.header = typeof headerSelector === 'string' ? document.querySelector(headerSelector) : headerSelector;
 		this.closebtn = typeof closebtnSelector === 'string' ? document.querySelector(closebtnSelector) : closebtnSelector;
+
+		this.resizeBar = typeof resizeBarSelector === 'string' ? document.querySelector(resizeBarSelector) : resizeBarSelector;
+
 
 		if (!this.container)
 		{
@@ -48,78 +63,25 @@ class WindowController
 		this.resizeStartLeft = 0;
 		this.resizeStartTop = 0;
 
+		this.minWidth = minWidth;
+		this.minHeight = minHeight;
+
 		//四隅上下左右リサイズハンドルの追加
 		['nw', 'ne', 'sw', 'se', 'n', 's', 'w', 'e'].forEach(dir =>
 		{
 			const handle = document.createElement('div');
 			handle.className = `resize-handle ${dir}`;
 
-			handle.addEventListener('pointerdown', (e) =>
-			{
-				// ポインターの入力をこの要素に固定する
-				handle.setPointerCapture(e.pointerId);
-
-				e.preventDefault();  //デフォルトの挙動（イベント）をキャンセルする
-				e.stopPropagation(); //親へイベントが伝わるのを止める！
-
-				activeWindow = this;
-
-				this.isResizing = true;
-				this.resizeDir = dir;
-				this.resizeStartX = e.clientX;
-				this.resizeStartY = e.clientY;
-
-				const rect = this._fixPosition();
-				this.resizeStartW = rect.width;
-				this.resizeStartH = rect.height;
-				this.resizeStartLeft = rect.left;
-				this.resizeStartTop = rect.top;
-			});
-
-			handle.addEventListener('pointermove', (e) =>
-			{
-				if (this.isResizing)
-				{
-					const dx = e.clientX - this.resizeStartX;
-					const dy = e.clientY - this.resizeStartY;
-
-					if (this.resizeDir.includes('e'))
-					{
-						this.container.style.width = `${Math.max(280, this.resizeStartW + dx)}px`;
-					}
-					if (this.resizeDir.includes('s'))
-					{
-						this.container.style.height = `${Math.max(180, this.resizeStartH + dy)}px`;
-					}
-					if (this.resizeDir.includes('w'))
-					{
-						const newW = Math.max(280, this.resizeStartW - dx);
-						this.container.style.width = `${newW}px`;
-						this.container.style.left = `${this.resizeStartLeft + (this.resizeStartW - newW)}px`;
-					}
-					if (this.resizeDir.includes('n'))
-					{
-						const newH = Math.max(180, this.resizeStartH - dy);
-						this.container.style.height = `${newH}px`;
-						this.container.style.top = `${this.resizeStartTop + (this.resizeStartH - newH)}px`;
-					}
-				}
-			});
-
-			// ★ main.js の mouseup から呼び出してもらうためのメソッド
-			handle.addEventListener('pointerup', (e) =>
-			{
-				// 固定を解除する（これを行わなくても、指を離したりマウスを離すと自動で解除されます）
-				handle.releasePointerCapture(e.pointerId);
-
-				this.isDragging = false;
-				this.isResizing = false;
-				activeWindow = null;
-			});
+			this._makeResizable(handle, dir);
 
 			this.container.appendChild(handle);
 
 		});
+
+		if (this.resizeBar)
+		{
+			this._makeResizable(this.resizeBar, resizeBarDir);
+		}
 
 		// ヘッダーイベントがある場合のみドラッグ可能
 		if (this.header)
@@ -186,6 +148,74 @@ class WindowController
 		}
 	}
 
+	//ハンドル要素に「掴んで動かすとリサイズする」処理を付ける共通関数
+	_makeResizable(handle, dir)
+	{
+		handle.addEventListener('pointerdown', (e) =>
+		{
+			// ポインターの入力をこの要素に固定する
+			handle.setPointerCapture(e.pointerId);
+
+			e.preventDefault();  //デフォルトの挙動（イベント）をキャンセルする
+			e.stopPropagation(); //親へイベントが伝わるのを止める！
+
+			activeWindow = this;
+
+			this.isResizing = true;
+			this.resizeDir = dir;
+			this.resizeStartX = e.clientX;
+			this.resizeStartY = e.clientY;
+
+			const rect = this._fixPosition();
+			this.resizeStartW = rect.width;
+			this.resizeStartH = rect.height;
+			this.resizeStartLeft = rect.left;
+			this.resizeStartTop = rect.top;
+		});
+
+		handle.addEventListener('pointermove', (e) =>
+		{
+			if (this.isResizing)
+			{
+				const dx = e.clientX - this.resizeStartX;
+				const dy = e.clientY - this.resizeStartY;
+
+				if (dir.includes('e'))
+				{
+					//★変更：固定値280 → this.minWidth
+					this.container.style.width = `${Math.max(this.minWidth, this.resizeStartW + dx)}px`;
+				}
+				if (dir.includes('s'))
+				{
+					//★変更：固定値180 → this.minHeight
+					this.container.style.height = `${Math.max(this.minHeight, this.resizeStartH + dy)}px`;
+				}
+				if (dir.includes('w'))
+				{
+					const newW = Math.max(this.minWidth, this.resizeStartW - dx);
+					this.container.style.width = `${newW}px`;
+					this.container.style.left = `${this.resizeStartLeft + (this.resizeStartW - newW)}px`;
+				}
+				if (dir.includes('n'))
+				{
+					//topBarを上にドラッグ→高さが増える／下にドラッグ→高さが減る
+					const newH = Math.max(this.minHeight, this.resizeStartH - dy);
+					this.container.style.height = `${newH}px`;
+					this.container.style.top = `${this.resizeStartTop + (this.resizeStartH - newH)}px`;
+				}
+			}
+		});
+
+		handle.addEventListener('pointerup', (e) =>
+		{
+			handle.releasePointerCapture(e.pointerId);
+
+			this.isDragging = false;
+			this.isResizing = false;
+			activeWindow = null;
+		});
+	}
+
 	// 完全に消え去るための後片付けメソッド
 	destroy()
 	{
@@ -205,6 +235,9 @@ class WindowController
 		this.container.style.left = `${rect.left}px`;
 		this.container.style.bottom = 'auto';
 		this.container.style.right = 'auto';
+
+		//CSSの transform: translateX(-50 %) が残っていると、left を上書きした後にさらにズレてしまうので、無効化する
+		this.container.style.transform = 'none';
 		return rect;
 	}
 
@@ -223,12 +256,6 @@ class WindowController
 	}
 }
 
-//ウィンドウクラス追加 呼び出し
-export function init()
-{
-	chatWindow = new WindowController('#chat-container', '#chat-header', '#chat-close-btn');
-	windows.push(chatWindow);
-}
 
 export function mousemove(e)
 {

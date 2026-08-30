@@ -1,25 +1,28 @@
+import { print, addLog } from '../shared/sub.js';
+import * as utils2 from '../shared/utils2.js';
+
 import * as windows from './windows.js';
 import { canvas, ctx } from './engine.js';
 import * as engine from './engine.js';
 import * as input from './input.js';
 import { keys, keysPress, mouseInfo } from './input.js';
-import * as player from './player.js';
 import * as world from './world.js';
-import { print, addLog } from '../shared/sub.js';
-import * as utils2 from '../shared/utils2.js';
+import * as player from './player.js';
+import * as chat from './chat.js';
 
 //初期化
 async function init()
 {
 	engine.init();
 	windows.init();
+	await chat.init();
 
 	await player.init();
 	await world.init();
-
 }
 
 //画面更新
+let firstUpdate = false;
 function update(delta)
 {
 	// カメラ計算のため、プレイヤーの中心座標を渡す
@@ -31,6 +34,11 @@ function update(delta)
 
 	//プレイヤー画面更新
 	player.update(delta);
+
+	//if (!firstUpdate)
+	chat.update();
+
+	firstUpdate = true;
 }
 
 //アニメーション
