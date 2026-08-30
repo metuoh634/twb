@@ -25,6 +25,7 @@ function updateCamera(targetX, targetY)
 	// マップの端でカメラが止まるように、値の範囲を制限する（端の外側が映らないように）
 	camera.x = Math.max(0, Math.min(MAP_WIDTH - canvas.width, camera.x));
 	camera.y = Math.max(0, Math.min(MAP_HEIGHT - canvas.height, camera.y));
+
 }
 
 

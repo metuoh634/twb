@@ -25,7 +25,7 @@ export let isRunning = true; 				//走り/歩き
 export let state = "idle";
 export let direction = "forward";
 export let flip = false;//false=左
-export const position = { x: 50, y: 50 };	//プレイヤー位置
+export const position = { x: 2585, y: 1956 };	//プレイヤー位置
 export let currentFrame = 0; 				// 何コマ目を表示しているか(0番目からスタート)
 //export const ANIMATION_SPEED = 10; 		// フレーム更新の速さ（値が小さいほど速い）
 export let FRAME_DURATION = 0.1;			// アニメーションの更新間隔（秒単位：例 0.1秒ごとに1コマ進める）
@@ -124,9 +124,9 @@ export function updateState(key = input.keysPress)
 	else if (key.a && key.s) { d = 'forside'; f = false; }						// 左下
 	else if (key.a && key.w) { d = 'backside'; f = false; }					// 左上
 	else if (key.d && key.w) { d = 'backside'; f = true; }	// 右上（左上を反転）
-	else if (key.w) { d = 'backward'; }									// 上
+	else if (key.w) { d = 'backward'; f = false; }									// 上
 	else if (key.a) { d = 'side'; f = false; }						// 左
-	else if (key.s) { d = 'forward'; }									// 下
+	else if (key.s) { d = 'forward'; f = false; }									// 下
 	else if (key.d) { d = 'side'; f = true; }						// 右（左を反転）
 
 	changed = (s != state || d != direction || f != flip);

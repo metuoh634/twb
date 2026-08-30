@@ -63,3 +63,25 @@ await init();
 
 //ゲーム開始
 requestAnimationFrame(animate);
+
+
+//デバッグ表示
+function showModelDebugInfo()
+{
+	if (!player)//|| !player.object3D)
+		return;
+
+	const div = document.getElementById('debugInfo');
+
+	div.textContent = "[Model Debug Info]"
+		+ "\n[World]"
+		+ "\n camera.x:" + world.camera.x.toFixed(3) + " camera.y:" + world.camera.y.toFixed(3)
+		+ "\n[Player]"
+		+ "\n position.x:" + player.position.x.toFixed(3) + " position.y:" + player.position.y.toFixed(3)
+		+ "\n state:" + player.state + " direction:" + player.direction + " flip:" + player.flip
+}
+showModelDebugInfo();
+setInterval(showModelDebugInfo, 500);
+
+//レンダラーにフォーカス
+engine.canvas.focus();
