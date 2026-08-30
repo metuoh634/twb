@@ -8,14 +8,12 @@ import * as input from './input.js';
 import { keys, keysPress, mouseInfo } from './input.js';
 import * as world from './world.js';
 import * as player from './player.js';
-import * as chat from './chat.js';
 
 //初期化
 async function init()
 {
 	engine.init();
 	windows.init();
-	await chat.init();
 
 	await player.init();
 	await world.init();
@@ -35,8 +33,6 @@ function update(delta)
 	//プレイヤー画面更新
 	player.update(delta);
 
-	//if (!firstUpdate)
-	chat.update();
 
 	firstUpdate = true;
 }

@@ -29,10 +29,12 @@ export function init()
 //ウィンドウズクラス
 class WindowController
 {
-	/**
-	 * @param {string|HTMLElement} targetSelector - 動かしたいウィンドウの要素、またはセレクタ
-	 * @param {string|HTMLElement} headerSelector - ドラッグのトリガーになるヘッダー要素（任意）
-	 */
+	//targetSelector　全面サイズ変更
+	//headerSelector　動かしたいウィンドウ
+	//resizeBarSelector　特定サイズ変更用
+	//resizeBarDir　特定サイズ変更位置
+	//minWidth　最小横幅
+	//minHeight　最小高さ
 	constructor(targetSelector, headerSelector = null, closebtnSelector = null,
 		resizeBarSelector = null, resizeBarDir = 'n', minWidth = 280, minHeight = 180)
 	{
@@ -78,12 +80,13 @@ class WindowController
 
 		});
 
+		//ウィンドウリサイズ
 		if (this.resizeBar)
 		{
 			this._makeResizable(this.resizeBar, resizeBarDir);
 		}
 
-		// ヘッダーイベントがある場合のみドラッグ可能
+		// ヘッダー(ウィンドウドラッグ用)
 		if (this.header)
 		{
 			//ヘッダーマウスダウン
