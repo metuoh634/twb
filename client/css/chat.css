@@ -61,7 +61,7 @@ TWチャットバー
 }
 
 /*2段目ログエリア===========================*/
-#chatLog {
+#chatLogArea {
 	/*background-image: url("./assets/UI/ChatBar/log.png");
 	background-repeat: no-repeat;*/
 
@@ -77,7 +77,7 @@ TWチャットバー
 }
 
 /*実際のテキストが流れる場所*/
-#chatLogText {
+#chatLog {
 	position: absolute;
 	top: 0;
 	left: 0;
@@ -93,7 +93,7 @@ TWチャットバー
 /*スクロール============*/
 
 /* Chrome/Edgeで標準のスクロールバーを消す */
-#chatLogText::-webkit-scrollbar {
+#chatLog::-webkit-scrollbar {
 	display: none;
 }
 
@@ -115,13 +115,38 @@ TWチャットバー
 }
 
 /*スクロール上下ボタン*/
-#chatScrollUp,
+/*#chatScrollUp,
 #chatScrollDown {
 	cursor: pointer;
 	display: block;
+}*/
+
+#chatScrollUp,
+#chatScrollDown {
+
+	width: 11px;
+	height: 12px;
+	cursor: pointer;
+
+	/* 親の高さが変わっても自体は縮まないようにする */
+	flex-shrink: 0;
+
+	background-repeat: no-repeat;
+
+	/* 画像が要素からはみ出したり伸びたりしないようにする */
+	background-size: contain;
+	background-position: center;
 }
 
-/*スクロールつまみ*/
+#chatScrollUp {
+	background-image: url("../assets/UI/ChatBar/scrollUp.png");
+}
+
+#chatScrollDown {
+	background-image: url("../assets/UI/ChatBar/scrollDown.png");
+}
+
+/*スクロールつまみ可動域*/
 #chatScrollTrack {
 	/* 上下ボタンの間のスペースを全部使う */
 	position: relative;
@@ -129,14 +154,26 @@ TWチャットバー
 	width: 100%;
 }
 
-#chatScrollTrack img {
+/*スクロールつまみ*/
+#chatScrollBar {
+
 	position: absolute;
-	/*中央へ*/
+	/*画像サイズ+1pxで指定するとちょうどきれい*/
+	width: 10px;
+	/* 高さはJS側で計算してセットするので初期値だけ入れておく */
+	height: 19px;
+
+	/* トラックの中央より+2px右 */
 	left: calc(51.9% + 0px);
 	transform: translateX(-50%);
 	top: 0;
-	/* 高さ・縦位置はJS側で計算してセットする */
+
 	cursor: pointer;
+
+	background-image: url("../assets/UI/ChatBar/scrollBar.png");
+	background-repeat: no-repeat;
+	background-size: contain;
+	background-position: center;
 }
 
 /*チャット3段目===========================*/
@@ -155,7 +192,7 @@ TWチャットバー
 	display: flex;
 
 	/* 縦方向（垂直）の中央に揃える */
-	/*align-items: center;*/
+	align-items: center;
 	padding-left: 2px;
 	padding-right: 2px;
 }
