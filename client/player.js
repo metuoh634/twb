@@ -3,6 +3,7 @@ import * as utils2 from '../shared/utils2.js';
 
 import * as input from './input.js';
 import { canvas, ctx } from './engine.js';
+import { MAP_WIDTH, MAP_HEIGHT, camera } from './world.js';
 
 export const assets = {};
 export const assetPaths =
@@ -98,11 +99,10 @@ export function updatePosition(delta)
 		position.x += move.x * MOVE_SPEED * delta;
 		position.y += move.y * MOVE_SPEED * delta;
 
-		// マップ外へ出ないように画面内に移動を制限（必要に応じて調整）
-		position.x = Math.max(0, Math.min(canvas.width - SPRITE_WIDTH, position.x));
-		position.y = Math.max(0, Math.min(canvas.height - SPRITE_HEIGHT, position.y));
+		// 💡変更：画面(canvas)の外ではなく、マップ全体(MAP_WIDTH/MAP_HEIGHT)の外に出ないよう制限する
+		position.x = Math.max(0, Math.min(MAP_WIDTH - SPRITE_WIDTH, position.x));
+		position.y = Math.max(0, Math.min(MAP_HEIGHT - SPRITE_HEIGHT, position.y));
 	}
-
 }
 
 //キャラ(状態、方向、反転)の設定
@@ -170,6 +170,10 @@ export function update(delta)
 	// 描画前に一旦キャンバスをクリアする
 	//ctx.clearRect(position.x, position.y, player.frameWidth, player.frameHeight);
 
+	//ワールド座標(position)からカメラ位置を引いて「画面上の描画位置」を求める、プレイヤーが動いてもカメラが追従して常に画面中央に見える
+	const screenX = position.x - camera.x;
+	const screenY = position.y - camera.y;
+
 	// スプライトシートから該当コマだけを切り出して描画する
 	if (flip)
 	{
@@ -179,7 +183,7 @@ export function update(delta)
 		ctx.drawImage(
 			asset.img,
 			currentFrame * asset.frameWidth, 0, asset.frameWidth, asset.frameHeight,
-			-position.x - asset.frameWidth, position.y, asset.frameWidth, asset.frameHeight
+			-screenX - asset.frameWidth, screenY, asset.frameWidth, asset.frameHeight // 💡変更：position→screenX/screenY
 		);
 		ctx.restore();
 	}
@@ -188,7 +192,7 @@ export function update(delta)
 		ctx.drawImage(
 			asset.img,
 			currentFrame * asset.frameWidth, 0, asset.frameWidth, asset.frameHeight,
-			position.x, position.y, asset.frameWidth, asset.frameHeight
+			screenX, screenY, asset.frameWidth, asset.frameHeight // 💡変更：position→screenX/screenY
 		);
 	}
 }

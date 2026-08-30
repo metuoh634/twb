@@ -22,8 +22,12 @@ async function init()
 //画面更新
 function update(delta)
 {
-	//マップ画面更新
-	world.update(delta);
+	// カメラ計算のため、プレイヤーの中心座標を渡す
+	const centerX = player.position.x + player.SPRITE_WIDTH / 2;
+	const centerY = player.position.y + player.SPRITE_HEIGHT / 2;
+
+	//マップ描画
+	world.update(delta, centerX, centerY);
 
 	//プレイヤー画面更新
 	player.update(delta);

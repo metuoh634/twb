@@ -7,6 +7,7 @@ export const MAP_HEIGHT = 4500;
 
 export let path = '/assets/MAP/カウル.png';
 export let img = null;
+export const camera = { x: 0, y: 0 };
 
 //初期化
 export async function init()
@@ -14,24 +15,34 @@ export async function init()
 	img = await utils2.loadImage(path);
 }
 
+// プレイヤーの中心座標をもとに、カメラの位置を計算する関数
+function updateCamera(targetX, targetY)
+{
+	// プレイヤーが常に画面の中心に来るように、カメラの左上座標を逆算する
+	camera.x = targetX - canvas.width / 2;
+	camera.y = targetY - canvas.height / 2;
+
+	// マップの端でカメラが止まるように、値の範囲を制限する（端の外側が映らないように）
+	camera.x = Math.max(0, Math.min(MAP_WIDTH - canvas.width, camera.x));
+	camera.y = Math.max(0, Math.min(MAP_HEIGHT - canvas.height, camera.y));
+}
+
+
 //画面更新
-export function update(delta)
+export function update(delta, centerX, centerY)
 {
 	// 1. フレームの最初にキャンバス全体をクリア
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-	// キャンバスの画面サイズに合わせて切り取る幅・高さを決定
-	const sourceWidth = canvas.width;
-	const sourceHeight = canvas.height;
+	// プレイヤー位置に合わせてカメラを更新
+	updateCamera(centerX, centerY);
 
-	// マップ画像の中央を基準にした切り出し開始位置(x, y)を計算
-	const sourceX = (img.width - sourceWidth) / 2;
-	const sourceY = (img.height - sourceHeight) / 2;
-
-	//マップ描画
+	// 中央固定の切り出しではなく、カメラ位置を基準にマップを切り出す
 	ctx.drawImage(
 		img,
-		sourceX, sourceY, sourceWidth, sourceHeight, // 元画像の中央部分を切り抜き
-		0, 0, canvas.width, canvas.height            // 画面全体に1:1の等倍サイズで描画
+		camera.x, camera.y, canvas.width, canvas.height, // カメラ位置から画面サイズ分だけ切り抜き
+		0, 0, canvas.width, canvas.height                // 画面全体に1:1の等倍サイズで描画
 	);
+
+
 }
