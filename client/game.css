@@ -227,6 +227,105 @@ TWチャットバー
 	margin: 0.5px;
 }
 
+/* 耳打ちユーザー*/
+#chatWhisperUser {
+	width: 109px;
+	height: 25px;
+	background-image: url("./assets/UI/ChatBar/whisperUser.png");
+	background-repeat: no-repeat;
+	background-size: contain;
+	background-position: center;
+	/* ★ボタンではないのでカーソルは指定しない（テキストなら初期値のまま） */
+}
+/*#chatWhisperUser:active {
+	background-image: url("./assets/UI/ChatBar/whisperUser_push.png");
+}*/
+
+/*チャット入力バー*/
+#chatInput {
+	/* ★入力欄なので、残りの横幅いっぱいまで伸びるようにする */
+
+	/*「画面（親要素）の空きスペースに合わせて親要素内で伸縮し、コンテンツに応じた初期サイズを持つ」 設定です。
+	 1 （flex-grow / 伸長係数）: 親要素に余白がある場合、他の要素と分かち合って拡大します。 
+	 1 （flex-shrink / 収縮係数）: 親要素からはみ出る場合、他の要素に合わせて縮小します。 
+	 auto （flex-basis / 基本サイズ）: 要素の初期サイズを width や height（未指定の場合はコンテンツの大きさ）に基づいて決定します。*/
+	flex: 1 1 auto;
+
+	width: 261px;
+	height: 25px;
+	background-image: url("./assets/UI/ChatBar/input.png");
+	/* 入力欄は横方向に伸びる想定なので、繰り返し・伸縮ではなくこう指定 */
+	background-repeat: no-repeat;
+	background-size: 100% 100%;
+}
+#chatInput:active {
+	background-image: url("./assets/UI/ChatBar/inputing.png");
+}
+
+/*その他ボタン*/
+/* チャット下部ボタン共通のスタイル（サイズ・見え方などボタン全部で同じ部分をここにまとめる） */
+.chatBtn {
+	width: 24px;
+	height: 24px;
+
+	background-repeat: no-repeat;
+	/* 画像が要素からはみ出したり伸びたりしないようにする */
+	background-size: contain;
+	background-position: center;
+
+	cursor: pointer;
+}
+
+#chatOpen {
+	background-image: url("./assets/UI/ChatBar/open.png");
+}
+#chatOpen:active {
+	background-image: url("./assets/UI/ChatBar/open_push.png");
+}
+
+#chatMail {
+	background-image: url("./assets/UI/ChatBar/mail.png");
+}
+#chatMail:active {
+	background-image: url("./assets/UI/ChatBar/mail_push.png");
+}
+
+#chatMemo {
+	background-image: url("./assets/UI/ChatBar/memo.png");
+}
+#chatMemo:active {
+	background-image: url("./assets/UI/ChatBar/memo_push.png");
+}
+
+#chatMessanger {
+	background-image: url("./assets/UI/ChatBar/messanger.png");
+}
+#chatMessanger:active {
+	background-image: url("./assets/UI/ChatBar/messanger_push.png");
+}
+
+#chatDM {
+	background-image: url("./assets/UI/ChatBar/dm.png");
+}
+#chatDM:active {
+	background-image: url("./assets/UI/ChatBar/dm_push.png");
+}
+
+#chatFixedText {
+	background-image: url("./assets/UI/ChatBar/fixedText.png");
+}
+#chatFixedText:active {
+	background-image: url("./assets/UI/ChatBar/fixedText_push.png");
+}
+
+#chatEmote {
+	background-image: url("./assets/UI/ChatBar/emote.png");
+}
+#chatEmote:active {
+	background-image: url("./assets/UI/ChatBar/emote_push.png");
+}
+
+
 /* ==========================================================================
    チャットバブル
    ========================================================================== */
