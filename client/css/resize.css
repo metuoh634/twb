@@ -1,0 +1,62 @@
+/* ==========================================================================
+リサイズ用
+ ==========================================================================
+*/
+.resize-handle {
+	position: absolute;
+	width: 12px;
+	height: 12px;
+	z-index: 10;
+}
+.resize-handle.n {
+	top: 0;
+	left: 12px;
+	right: 12px;
+	height: 6px;
+	width: auto;
+	cursor: n-resize;
+}
+.resize-handle.s {
+	bottom: 0;
+	left: 12px;
+	right: 12px;
+	height: 6px;
+	width: auto;
+	cursor: s-resize;
+}
+.resize-handle.w {
+	left: 0;
+	top: 12px;
+	bottom: 12px;
+	width: 6px;
+	height: auto;
+	cursor: w-resize;
+}
+.resize-handle.e {
+	right: 0;
+	top: 12px;
+	bottom: 12px;
+	width: 6px;
+	height: auto;
+	cursor: e-resize;
+}
+.resize-handle.nw {
+	top: 0;
+	left: 0;
+	cursor: nw-resize;
+}
+.resize-handle.ne {
+	top: 0;
+	right: 0;
+	cursor: ne-resize;
+}
+.resize-handle.sw {
+	bottom: 0;
+	left: 0;
+	cursor: sw-resize;
+}
+.resize-handle.se {
+	bottom: 0;
+	right: 0;
+	cursor: se-resize;
+}

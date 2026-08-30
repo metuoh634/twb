@@ -1,0 +1,106 @@
+html, body {
+	background-color: #000;
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+	/* スクロールバーを非表示にする */
+	width: 100%;
+	height: 100%;
+}
+canvas {
+	display: block;
+	margin: 0px auto;
+	z-index: 1;
+}
+
+#debugInfo {
+	position: fixed;
+	top: 10px;
+	left: 10px;
+	background: rgba(0, 0, 0, 0.7);
+	color: #0f0;
+	font-family: monospace;
+	font-size: 12px;
+	padding: 10px;
+	border-radius: 6px;
+	white-space: pre;
+	pointer-events: none;
+	z-index: 999;
+}
+
+
+/* ==========================================================================
+   チャットバブル
+   ========================================================================== */
+.chat-bubble {
+	position: absolute;
+	/* 💡 JavaScriptで計算した中心が、吹き出しの「下の尖った部分」になるように調整 */
+	transform: translate(-50%, -100%);
+
+	/* 見た目の装飾 */
+	background-color: rgba(255, 255, 255, 0.9);
+	/* ほんのり透ける白 */
+	color: #333333;
+	/* 文字は濃いグレーで読みやすく */
+	padding: 8px 14px;
+	/* 内側の余白 */
+	border-radius: 12px;
+	/* 角丸 */
+	font-size: 14px;
+	font-family: sans-serif;
+	font-weight: bold;
+	white-space: nowrap;
+	/* 文字が勝手に改行されないようにする */
+
+	/* 縁取り 
+	box-shadow: 0 4px 6px rgba(233, 212, 26, 0.856), 0 0 0 2px #d4084c;*/
+
+	/* Three.jsのマウス操作を邪魔しない */
+	pointer-events: none;
+
+	/* 表示されるときのアニメーション（フワッと出る） */
+	animation: popIn 0.15s ease-out forwards;
+}
+
+/* 吹き出しの下の三角（矢印） */
+.aaaachat-bubble::after {
+	content: '';
+	position: absolute;
+	bottom: -8px;
+	/* 枠線の太さに合わせて微調整 */
+	left: 50%;
+	transform: translateX(-50%);
+
+	/* 三角形を作るテクニック */
+	border-left: 8px solid transparent;
+	border-right: 8px solid transparent;
+	border-top: 8px solid #333333;
+	/* 外枠と同じ色にする */
+}
+
+/* 吹き出しの下の三角の内側（白） */
+.aaachat-bubble::before {
+	content: '';
+	position: absolute;
+	bottom: -6px;
+	left: 50%;
+	transform: translateX(-50%);
+	z-index: 1;
+
+	border-left: 7px solid transparent;
+	border-right: 7px solid transparent;
+	border-top: 7px solid rgba(255, 255, 255, 0.9);
+	/* 背景と同じ色 */
+}
+
+/* ポップアップアニメーション */
+@keyframes popIn {
+	0% {
+		transform: translate(-50%, -80%) scale(0.8);
+		opacity: 0;
+	}
+	100% {
+		transform: translate(-50%, -100%) scale(1);
+		opacity: 1;
+	}
+}
