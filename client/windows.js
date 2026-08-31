@@ -7,12 +7,9 @@ export let windows = [];
 
 //チャットバー
 export let chatWindow;
-export const chatLog = document.getElementById('chat-log');
-export const chatInput = document.getElementById('chat-input');
-export const chatSendBtn = document.getElementById('chat-send-btn');
-export const chatContainer = document.getElementById('chat-container');
-export const chatHeader = document.getElementById('chat-header');
-export const chatCloseBtn = document.getElementById('chat-close-btn');
+export const chatArea = document.getElementById("chatArea");
+export const chatInput = document.getElementById("chatInput");
+export const chatLog = document.getElementById("chatLog");
 
 //ウィンドウクラス追加 呼び出し
 export function init()
@@ -36,20 +33,20 @@ class WindowController
 	//minWidth　最小横幅
 	//minHeight　最小高さ
 	constructor(targetSelector, headerSelector = null, closebtnSelector = null,
-		resizeBarSelector = null, resizeBarDir = 'n', minWidth = 280, minHeight = 180)
+		resizeBarSelector = null, resizeBarDir = 'n', minWidth = 280, minHeight = 180, childLock = false)
 	{
 		this.container = typeof targetSelector === 'string' ? document.querySelector(targetSelector) : targetSelector;
 		this.header = typeof headerSelector === 'string' ? document.querySelector(headerSelector) : headerSelector;
 		this.closebtn = typeof closebtnSelector === 'string' ? document.querySelector(closebtnSelector) : closebtnSelector;
-
 		this.resizeBar = typeof resizeBarSelector === 'string' ? document.querySelector(resizeBarSelector) : resizeBarSelector;
-
 
 		if (!this.container)
 		{
 			addLog("WARNING", '対象のウィンドウ要素が見つかりませんでした。');
 			return;
 		}
+
+		this.childLock = childLock;
 
 		// 各インスタンスごとに独立した状態（状態の隠蔽）
 		this.isDragging = false;
@@ -86,18 +83,19 @@ class WindowController
 			this._makeResizable(this.resizeBar, resizeBarDir);
 		}
 
-		// ヘッダー(ウィンドウドラッグ用)
+		// ウィンドウドラッグ用
 		if (this.header)
 		{
 			//ヘッダーマウスダウン
 			this.header.addEventListener('pointerdown', (e) =>
 			{
 				// e.targetが「子要素自体」または「子要素の中身」である場合は、親の処理をスルーする
-				if (this.header.contains(e.target) && e.target !== this.header)
+				if (this.childLock)
 				{
-					// 💡「親の中に含まれている、かつ、親自身ではない」＝「子要素のどこかが触られた」ということ！
-					//console.log('子要素（またはその中身）が触られました');
-					return; // ここで処理を終わらせれば、親の処理をスキップできます
+					if (this.header.contains(e.target) && e.target !== this.header)
+					{
+						return; // ここで処理を終わらせれば、親の処理をスキップできます
+					}
 				}
 
 				// ポインターの入力をこの要素に固定する
@@ -143,7 +141,7 @@ class WindowController
 		{
 			this.closebtn.addEventListener('click', (e) =>
 			{
-				this.container.style.display = 'none';
+				this.hide();
 
 				e.preventDefault();  //デフォルトの挙動（イベント）をキャンセルする
 				e.stopPropagation(); //親へイベントが伝わるのを止める！
@@ -244,6 +242,11 @@ class WindowController
 		return rect;
 	}
 
+	hide()
+	{
+		this.container.style.display = 'none';
+	}
+
 	restore()
 	{
 		this.container.style.display = '';
@@ -252,7 +255,8 @@ class WindowController
 	isVisible()
 	{
 		//方法1 最終的に適用されている実際の display の値を取得して判定
-		//return getComputedStyle(this.container).display !== 'none';
+		if (getComputedStyle(this.container).display !== 'none')
+			return true;
 
 		//方法2 画面上に表示されていれば offsetParent は null 以外になる
 		return this.container.offsetParent !== null;

@@ -3,6 +3,7 @@
 // ==========================================================================
 
 // HTMLから「入力欄」と「ログを表示するエリア」の要素を取得しておく
+const chatArea = document.getElementById("chatArea");
 const chatInput = document.getElementById("chatInput");
 const chatLog = document.getElementById("chatLog");
 
@@ -51,12 +52,11 @@ const chatScrollTrack = document.getElementById("chatScrollTrack");
 const chatScrollBar = document.getElementById("chatScrollBar");
 
 // 1回のクリックで何pxスクロールするかの量
-const SCROLL_STEP = 5;
+const SCROLL_STEP = 14;
 
 // 「つまみ」の大きさと位置を、今のログの状態に合わせて計算し直す処理
 function updateScrollBar()
 {
-
 	// ログ全体の高さ（見えていない部分も含む）
 	const contentHeight = chatLog.scrollHeight;
 	// ログを表示している枠の高さ（見えている部分だけ）
@@ -84,8 +84,10 @@ function updateScrollBar()
 	// つまみが動ける範囲（トラックの高さ）を取得する
 	const trackHeight = chatScrollTrack.clientHeight;
 
-	// 「見えている割合」に応じてつまみの高さを決める（最低10pxは確保して掴みやすくする）
-	const thumbHeight = Math.max((visibleHeight / contentHeight) * trackHeight, 10);
+	// 「見えている割合」に応じてつまみの高さを決める
+	// 最低の高さを大きめ（トラックの40%）にすることで、
+	// 少しだけ隠れている場合でも「まだ動かせる余地がある」と分かりやすくする
+	const thumbHeight = Math.max((visibleHeight / contentHeight) * trackHeight, trackHeight * 0.4);
 
 	// スクロールできる範囲がどれくらい残っているか
 	const maxScrollTop = contentHeight - visibleHeight;
@@ -115,11 +117,6 @@ chatScrollDown.addEventListener("click", () =>
 
 // ログがスクロールされたら（マウスホイールなども含む）つまみの位置を更新する
 chatLog.addEventListener("scroll", updateScrollBar);
-
-// ログの中身が増えたり減ったりしたときにも、つまみの大きさを更新する
-// MutationObserverは「監視対象の中身が変わったら知らせてくれる」仕組み
-const chatLogObserver = new MutationObserver(updateScrollBar);
-chatLogObserver.observe(chatLog, { childList: true });
 
 // つまみをドラッグしている最中かどうかを覚えておく変数
 let isDraggingThumb = false;
@@ -173,6 +170,22 @@ document.addEventListener("mouseup", () =>
 {
 	isDraggingThumb = false;
 });
+
+
+// ログの中身が増えたり減ったりしたときにも、つまみの大きさを更新する
+// MutationObserverは「監視対象の中身が変わったら知らせてくれる」仕組み
+const chatLogObserver = new MutationObserver(updateScrollBar);
+chatLogObserver.observe(chatLog, { childList: true });
+
+// chatLogArea自体のサイズが変わったこと（ドラッグでのリサイズなど）を検知する仕組み
+// ResizeObserverは「監視対象の大きさが変わったら知らせてくれる」機能で、
+// windowのresizeイベントと違い、要素自体を直接リサイズした場合にも反応してくれる
+const chatLogAreaResizeObserver = new ResizeObserver(() => { updateScrollBar(); });
+
+// 監視対象として、ログエリア全体（枠）を登録する
+chatLogAreaResizeObserver.observe(document.getElementById("chatLogArea"));
+
+
 
 // ページが読み込まれた時点でも、一度つまみの状態を正しくしておく
 updateScrollBar();

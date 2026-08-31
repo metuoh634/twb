@@ -19,6 +19,157 @@ async function init()
 	await world.init();
 }
 
+//チャットを送信
+function SendChat(e)
+{
+	if (e.key === 'Enter')
+	{
+		const text = windows.chatInput.value.trim();
+
+		//サーバー未接続
+		//if (!socket.connected)
+		//{
+		//	addLog("ERROR", "サーバーに接続されていません")
+		//}
+		//チャットウィンドウ非表示中
+		if (!windows.chatWindow.isVisible())
+		{
+			windows.chatWindow.restore();
+			windows.chatInput.focus();
+		}
+		//チャットバーにフォーカスある
+		else if (document.activeElement === windows.chatInput)
+		{
+			//テキスト入力
+			if (text === '')
+				engine.canvas.focus();//3Dキャンバスに戻る
+			else
+			{
+				socket.sendChat(text);//サーバーへチャット
+				this.showBubble(text);//バブル表示
+				windows.chatInput.value = '';// 入力欄をクリア
+				engine.canvas.focus();//3Dキャンバスに戻る
+			}
+		}
+		//チャットバーにフォーカス
+		else
+			windows.chatInput.focus();
+
+		return true;
+	}
+	else
+	{
+		return document.activeElement === windows.chatInput;
+	}
+}
+
+///////イベント//////////
+
+
+document.addEventListener('keydown', (e) =>
+{
+	if (e.key === "c")
+	{
+		if (windows.chatWindow.isVisible())
+		{
+			windows.chatWindow.hide();
+			//engine.canvas.focus();
+		}
+		else
+		{
+			windows.chatWindow.restore();
+		}
+	}
+	else if (SendChat(e))
+	{
+	}
+	else
+	{
+		//キー状態更新
+		input.getKeyState_keydown(e);
+	}
+});
+
+
+document.addEventListener('keyup', (e) =>
+{
+	//キー状態更新
+	input.getKeyState_keyup(e);
+});
+
+document.addEventListener('mousedown', (e) =>
+{
+	//マウス状態更新
+	input.getMouseState_mousedown(e);
+
+	//if (player)
+	//	player.mousedown()
+});
+// マウスを動かしているとき
+document.addEventListener('mousemove', (e) =>
+{
+	input.getMouseState_mousemove(e);
+
+	//if (mouseInfo.right)
+	//{
+	//カメラ
+	//	engine.camera_MouseMove(e);
+
+	//}
+
+	//addLog("INFO", "window.mousemove" + mouseInfo.right);
+	//windows.mousemove(e);
+});
+// マウスを離したとき
+document.addEventListener('mouseup', (e) =>
+{
+	input.getMouseState_mouseup(e);
+
+	//addLog("INFO", "window.mouseup" + mouseInfo.right);
+	//windows.mouseup(e);
+
+});
+// マウスホイールのイベント
+window.addEventListener('wheel', (e) =>
+{
+	input.getMouseState_mousewheel(e);
+	//engine.camera_MouseWheel();
+});
+
+// 画面外に出た
+window.addEventListener('mouseleave', () =>
+{
+});
+
+// タブが切り替わったり別ウィンドウに移った
+window.addEventListener('blur', () =>
+{
+});
+
+//メニューが表示されたとき
+document.addEventListener('contextmenu', (e) =>
+{
+	//ブラウザの標準右クリックメニューが出ないようにする
+	e.preventDefault();
+});
+
+// 画面リサイズへの対応
+window.addEventListener('resize', () =>
+{
+	engine.repaint();
+});
+
+// ページ読み込み時
+window.addEventListener('load', () =>
+{
+	// ページの準備が完全に整ってからフォーカスを当てる
+	//engine.canvas.focus();
+});
+
+
+
+
+
 //画面更新
 let firstUpdate = false;
 function update(delta)
