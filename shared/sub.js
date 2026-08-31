@@ -84,15 +84,15 @@ export function print2(text)
 	console.log(text);
 }
 
-//ログエリアに文字追加
-const chatLog = document.getElementById('chat-log');
-
 //色付きdiv作成
 export function createTypeFont(type, message)
 {
 	const ctype = type.toUpperCase();
 	let prefix = "";
 	const mes = document.createElement('div');
+
+	//クラス名設定
+	mes.classList.add("chatLog");
 
 	/*
 	// 直接 body に追加する場合は、3D画面の手前に浮かせるために絶対配置が必要です！
@@ -103,11 +103,6 @@ export function createTypeFont(type, message)
 	msgDiv.style.left = '10px';
 	msgDiv.style.zIndex = '100'; // 3D画面（キャンバス）より手前に出す設定
 	*/
-
-	// 見た目の装飾だけ残す
-	mes.style.backgroundColor = 'rgba(0,0,0,0.8)';
-	mes.style.fontFamily = 'sans-serif';
-	mes.style.borderRadius = '4px'; // ちょっと角を丸くすると綺麗になります
 
 	if (ctype === 'INFO')
 		mes.style.color = 'white';
@@ -135,6 +130,8 @@ export function typeConsole(type)
 		consoleFunc = console.error; //致命的エラー
 	return consoleFunc;
 }
+
+const chatLog = document.getElementById('chatLog');
 
 export function addLog(type, message, logArea = chatLog)
 {

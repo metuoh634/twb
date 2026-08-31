@@ -1,3 +1,10 @@
+import { print, addLog } from '../shared/sub.js';
+
+import * as socket from './ws_bin_client.js';
+import * as windows from './windows.js';
+import * as engine from './engine.js';
+import * as player from './player.js';
+
 // ==========================================================================
 // チャット入力の処理
 // ==========================================================================
@@ -7,12 +14,70 @@ const chatArea = document.getElementById("chatArea");
 const chatInput = document.getElementById("chatInput");
 const chatLog = document.getElementById("chatLog");
 
-// 入力欄でキーが押されたときに呼ばれる処理を登録する
-chatInput.addEventListener("keydown", (event) =>
+export function init()
 {
+	//this.onChat = this.onChat.bind(this);
+	socket.callbacks.onchat = onChat;
+}
+
+//チャット受信
+export function onChat(text)
+{
+	addLog("INFO", text);
+}
+
+//チャットを送信
+export function SendChat(e)
+{
+	if (e.key === 'Enter')
+	{
+		const text = chatInput.value.trim();
+
+		//サーバー未接続
+		if (!socket.connected)
+		{
+			addLog("ERROR", "サーバーに接続されていません")
+		}
+		//チャットウィンドウ非表示中
+		if (!windows.chatWindow.isVisible())
+		{
+			windows.chatWindow.restore();
+			chatInput.focus();
+		}
+		//チャットバーにフォーカスある
+		else if (document.activeElement === chatInput)
+		{
+			//テキスト入力
+			if (text === '')
+				engine.canvas.focus();//3Dキャンバスに戻る
+			else
+			{
+				socket.sendChat(text);//サーバーへチャット
+				//this.showBubble(text);//バブル表示
+				chatInput.value = '';// 入力欄をクリア
+				engine.canvas.focus();//3Dキャンバスに戻る
+			}
+		}
+		//チャットバーにフォーカス
+		else
+			chatInput.focus();
+
+		return true;
+	}
+	else//Enter以外
+	{
+		//チャットバーにフォーカスがある状態でのキー入力
+		return document.activeElement === chatInput;
+	}
+}
+
+// 入力欄でキーが押されたときに呼ばれる処理を登録する
+chatInput.addEventListener("keydown", (e) =>
+{
+	//SendChat(e);
 
 	// 押されたキーが「Enter」以外なら何もしない
-	if (event.key !== "Enter")
+	/*if (event.key !== "Enter")
 	{
 		return;
 	}
@@ -39,6 +104,7 @@ chatInput.addEventListener("keydown", (event) =>
 
 	// 新しい行が見えるように、ログエリアを一番下までスクロールする
 	chatLog.scrollTop = chatLog.scrollHeight;
+	*/
 });
 
 // ==========================================================================
@@ -115,12 +181,9 @@ chatScrollDown.addEventListener("click", () =>
 	chatLog.scrollTop += SCROLL_STEP;
 });
 
-// つまみをドラッグしている最中かどうかを覚えておく変数
-let isDraggingThumb = false;
-// ドラッグを開始した瞬間の、マウスのY座標を覚えておく変数
-let dragStartY = 0;
-// ドラッグを開始した瞬間の、ログのscrollTopを覚えておく変数
-let dragStartScrollTop = 0;
+let isDraggingThumb = false;	// つまみをドラッグしている最中かどうかを覚えておく変数
+let dragStartY = 0;				// ドラッグを開始した瞬間の、マウスのY座標を覚えておく変数
+let dragStartScrollTop = 0;		// ドラッグを開始した瞬間の、ログのscrollTopを覚えておく変数
 
 // つまみの上でマウスボタンを押したらドラッグ開始
 chatScrollBar.addEventListener("mousedown", (event) =>
@@ -133,10 +196,9 @@ chatScrollBar.addEventListener("mousedown", (event) =>
 	event.preventDefault();
 });
 
-// マウスが動いたときの処理（ドラッグ中だけ意味を持たせる）
-document.addEventListener("mousemove", (event) =>
+// マウスが動いたときの処理（スクロールバードラッグ処理）
+export function mousemove(e)
 {
-
 	// ドラッグ中でなければ何もしない
 	if (!isDraggingThumb)
 	{
@@ -144,7 +206,7 @@ document.addEventListener("mousemove", (event) =>
 	}
 
 	// ドラッグ開始位置から、マウスがどれだけ動いたか
-	const deltaY = event.clientY - dragStartY;
+	const deltaY = e.clientY - dragStartY;
 
 	// トラックの高さとつまみの高さから、動ける範囲を計算する
 	const trackHeight = chatScrollTrack.clientHeight;
@@ -160,17 +222,22 @@ document.addEventListener("mousemove", (event) =>
 
 	// ドラッグ開始時のスクロール位置に、移動量を足して反映する
 	chatLog.scrollTop = dragStartScrollTop + scrollDelta;
-});
+}
 
 // マウスボタンを離したらドラッグ終了
-document.addEventListener("mouseup", () =>
+export function mouseup(e)
 {
 	isDraggingThumb = false;
+}
+
+
+// ログがスクロールされたら（マウスホイールなども含む）
+chatLog.addEventListener("scroll", () =>
+{
+	//つまみの位置を更新する
+	updateScrollBar();
 });
 
-
-// ログがスクロールされたら（マウスホイールなども含む）つまみの位置を更新する
-chatLog.addEventListener("scroll", updateScrollBar);
 
 // ログの中身が増えたり減ったりしたときにも、つまみの大きさを更新する
 // MutationObserverは「監視対象の中身が変わったら知らせてくれる」仕組み
@@ -184,7 +251,6 @@ const chatLogAreaResizeObserver = new ResizeObserver(() => { updateScrollBar(); 
 
 // 監視対象として、ログエリア全体（枠）を登録する
 chatLogAreaResizeObserver.observe(document.getElementById("chatLogArea"));
-
 
 
 // ページが読み込まれた時点でも、一度つまみの状態を正しくしておく

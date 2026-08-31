@@ -5,63 +5,23 @@ import * as sub from '../shared/sub.js';
 import * as windows from './windows.js';
 import { canvas, ctx } from './engine.js';
 import * as engine from './engine.js';
+import * as socket from './ws_bin_client.js';
 import * as input from './input.js';
 import { keys, keysPress, mouseInfo } from './input.js';
 import * as world from './world.js';
 import * as player from './player.js';
+import * as chat from './chat.js';
 
 //初期化
 async function init()
 {
 	engine.init();
 	windows.init();
+	socket.init();
+	chat.init();
 
 	await player.init();
 	await world.init();
-}
-
-//チャットを送信
-function SendChat(e)
-{
-	if (e.key === 'Enter')
-	{
-		const text = windows.chatInput.value.trim();
-
-		//サーバー未接続
-		//if (!socket.connected)
-		//{
-		//	addLog("ERROR", "サーバーに接続されていません")
-		//}
-		//チャットウィンドウ非表示中
-		if (!windows.chatWindow.isVisible())
-		{
-			windows.chatWindow.restore();
-			windows.chatInput.focus();
-		}
-		//チャットバーにフォーカスある
-		else if (document.activeElement === windows.chatInput)
-		{
-			//テキスト入力
-			if (text === '')
-				engine.canvas.focus();//3Dキャンバスに戻る
-			else
-			{
-				socket.sendChat(text);//サーバーへチャット
-				this.showBubble(text);//バブル表示
-				windows.chatInput.value = '';// 入力欄をクリア
-				engine.canvas.focus();//3Dキャンバスに戻る
-			}
-		}
-		//チャットバーにフォーカス
-		else
-			windows.chatInput.focus();
-
-		return true;
-	}
-	else
-	{
-		return document.activeElement === windows.chatInput;
-	}
 }
 
 ///////イベント//////////
@@ -71,8 +31,6 @@ chatOpen.addEventListener('click', (e) =>
 {
 	sub.fullScreen();
 });
-
-
 
 // バーチャル十字キー（スマホの画面左半分でのタッチ操作）
 //{ passive: false } にしているのは、e.preventDefault() を効かせるためです（passive: true だと preventDefault が無視されます）。
@@ -84,7 +42,10 @@ canvas.addEventListener('touchcancel', (e) => input.getVirtualMove_touchend(e), 
 
 document.addEventListener('keydown', (e) =>
 {
-	if (e.key === "c")
+	if (chat.SendChat(e))//送信したらtrue
+	{
+	}
+	else if (e.key === "c")
 	{
 		if (windows.chatWindow.isVisible())
 		{
@@ -95,9 +56,6 @@ document.addEventListener('keydown', (e) =>
 		{
 			windows.chatWindow.restore();
 		}
-	}
-	else if (SendChat(e))
-	{
 	}
 	else
 	{
@@ -131,7 +89,11 @@ document.addEventListener('mousedown', (e) =>
 // マウスを動かしているとき
 document.addEventListener('mousemove', (e) =>
 {
+	//状態取得
 	input.getMouseState_mousemove(e);
+
+	//チャットスクロールバー
+	chat.mousemove(e);
 
 	//if (mouseInfo.right)
 	//{
@@ -146,7 +108,11 @@ document.addEventListener('mousemove', (e) =>
 // マウスを離したとき
 document.addEventListener('mouseup', (e) =>
 {
+	//状態取得
 	input.getMouseState_mouseup(e);
+
+	//チャットスクロールバー
+	chat.mouseup(e);
 
 	//addLog("INFO", "window.mouseup" + mouseInfo.right);
 	//windows.mouseup(e);

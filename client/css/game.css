@@ -13,6 +13,13 @@ canvas {
 	z-index: 1;
 }
 
+/*sub.jsのaddLog用だけど、chat.cssがあるので未使用
+.log {
+	background-color: rgba(0, 0, 0, 0.8);
+	font-family: sans-serif;
+	border-radius: 4px;
+}*/
+
 #debugInfo {
 	position: fixed;
 	top: 10px;
