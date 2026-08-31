@@ -108,8 +108,15 @@ document.addEventListener('mousedown', (e) =>
 	//マウス状態更新
 	input.getMouseState_mousedown(e);
 
-	//if (player)
-	//	player.mousedown()
+	// キャンバス上を左クリックしたら、その場所を目的地にして歩き出す
+	if (mouseInfo.left && e.target === canvas)
+	{
+		// 画面上のクリック位置(clientX/Y)にカメラのズレ(camera.x/y)を足して、マップ上の座標に変換する
+		const worldX = e.clientX + world.camera.x;
+		const worldY = e.clientY + world.camera.y;
+
+		player.setMoveTarget(worldX, worldY);
+	}
 });
 // マウスを動かしているとき
 document.addEventListener('mousemove', (e) =>

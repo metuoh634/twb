@@ -34,6 +34,20 @@ export const MOVE_SPEED = 200; // 1秒あたりの移動ピクセル数
 export const SPRITE_WIDTH = 70;
 export const SPRITE_HEIGHT = 95;
 
+// マウスクリックで指定した「目的地」（ワールド座標）、null のときは目的地なし＝マウスでは移動していない状態
+export let moveTarget = null;
+// 目的地にどれだけ近づいたら「到着」とみなすか（px）
+const MOVE_TARGET_THRESHOLD = 4;
+
+// game.js側から呼び出して、クリックした場所を目的地として登録する関数
+export function setMoveTarget(x, y)
+{
+	moveTarget = { x, y };
+}
+
+
+
+
 //初期化
 export async function init()
 {
@@ -56,35 +70,68 @@ export async function init()
 	}
 }
 
-//移動しているかどうか
-export function isMoving(key = input.keysPress)
+//キーボードのw/a/s/dが押されているかどうか
+function isKeyMoving(key = input.keysPress)
 {
 	return (key.w || key.a || key.s || key.d);
 }
 
-//キーの移動量取得
-export function getKeyMovement(key = input.keysPress)
+//移動しているかどうか
+export function isMoving(key = input.keysPress)
 {
-	if (!isMoving())
-		return { x: 0, y: 0 };
+	return isKeyMoving(key) || moveTarget !== null;
+}
 
-	let moveX = 0;
-	let moveY = 0;
-
-	// キー入力状態に応じて移動方向を設定
-	if (key.w) moveY -= 1;
-	if (key.s) moveY += 1;
-	if (key.a) moveX -= 1;
-	if (key.d) moveX += 1;
-
-	// 斜め移動時に移動速度が速くならないよう正規化
-	if (moveX !== 0 && moveY !== 0)
+//キーの移動量取得
+export function getMovement(key = input.keysPress)
+{
+	// キーボード入力があれば、そちらを優先する（マウス移動は中断する）
+	if (isKeyMoving(key))
 	{
-		moveX *= Math.SQRT1_2; // 1 / sqrt(2)
-		moveY *= Math.SQRT1_2;
+		moveTarget = null;
+
+		let moveX = 0;
+		let moveY = 0;
+
+		// キー入力状態に応じて移動方向を設定
+		if (key.w) moveY -= 1;
+		if (key.s) moveY += 1;
+		if (key.a) moveX -= 1;
+		if (key.d) moveX += 1;
+
+		// 斜め移動時に移動速度が速くならないよう正規化
+		if (moveX !== 0 && moveY !== 0)
+		{
+			moveX *= Math.SQRT1_2; // 1 / sqrt(2)
+			moveY *= Math.SQRT1_2;
+		}
+
+		return { x: moveX, y: moveY };
 	}
 
-	return { x: moveX, y: moveY };
+	// マウスの目的地に向かって移動する
+	if (moveTarget)
+	{
+		// プレイヤーの中心座標から目的地までの距離を計算する
+		const centerX = position.x + SPRITE_WIDTH / 2;
+		const centerY = position.y + SPRITE_HEIGHT / 2;
+		const dx = moveTarget.x - centerX;
+		const dy = moveTarget.y - centerY;
+		const dist = Math.hypot(dx, dy);
+
+		// 十分近づいたら到着とみなし、目的地をクリアする
+		if (dist < MOVE_TARGET_THRESHOLD)
+		{
+			moveTarget = null;
+			return { x: 0, y: 0 };
+		}
+
+		// 目的地の方向を向いた「長さ1のベクトル」を返す
+		return { x: dx / dist, y: dy / dist };
+	}
+
+
+	return { x: 0, y: 0 };
 }
 
 //位置移動
@@ -92,8 +139,8 @@ export function updatePosition(delta)
 {
 	if (isMoving())
 	{
-		//キー移動量取得
-		let move = getKeyMovement();
+		//移動量取得
+		let move = getMovement();
 
 		// 座標を更新
 		position.x += move.x * MOVE_SPEED * delta;
@@ -119,15 +166,31 @@ export function updateState(key = input.keysPress)
 	else
 		s = "idle";
 
-	// 8方向の判定 (45度ずつ分割)
-	if (key.s && key.d) { d = 'forside'; f = true; }			// 右下（左下を反転）
-	else if (key.a && key.s) { d = 'forside'; f = false; }						// 左下
-	else if (key.a && key.w) { d = 'backside'; f = false; }					// 左上
-	else if (key.d && key.w) { d = 'backside'; f = true; }	// 右上（左上を反転）
-	else if (key.w) { d = 'backward'; f = false; }									// 上
-	else if (key.a) { d = 'side'; f = false; }						// 左
-	else if (key.s) { d = 'forward'; f = false; }									// 下
-	else if (key.d) { d = 'side'; f = true; }						// 右（左を反転）
+	//key.w などの「キーの状態」ではなく、実際の移動方向ベクトルで8方向を判定する、キーボードでもマウスクリック移動でも同じ処理で向きが決まる
+	const move = getMovement();
+
+	// 動いていない場合は、直前の向きをそのまま維持する
+	if (move.x !== 0 || move.y !== 0)
+	{
+		// 移動ベクトルの向いている角度を求める（画面はyが下向きなので、0=右、90°=下、180°=左、-90°=上）
+		const angle = Math.atan2(move.y, move.x);
+
+		// 角度を45度(=PI/4)刻みに丸めて、8方向のうちどれに一番近いかを求める（0〜7の整数）
+		const octant = Math.round(angle / (Math.PI / 4)) & 7;
+
+		// 求めた8方向の番号を、実際のスプライトの向き(d)と反転(f)に変換する
+		switch (octant)
+		{
+			case 0: d = 'side'; f = true; break;			// 右
+			case 1: d = 'forside'; f = true; break;		// 右下（左下を反転）
+			case 2: d = 'forward'; f = false; break;		// 下
+			case 3: d = 'forside'; f = false; break;		// 左下
+			case 4: d = 'side'; f = false; break;			// 左
+			case 5: d = 'backside'; f = false; break;		// 左上
+			case 6: d = 'backward'; f = false; break;		// 上
+			case 7: d = 'backside'; f = true; break;		// 右上（左上を反転）
+		}
+	}
 
 	changed = (s != state || d != direction || f != flip);
 
