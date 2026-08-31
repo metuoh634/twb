@@ -12,7 +12,7 @@ export let flip = false;//false=左
 export const position = { x: 2585, y: 1956 };	//プレイヤー位置
 export let currentFrame = 0; 				// 何コマ目を表示しているか(0番目からスタート)
 //export const ANIMATION_SPEED = 10; 		// フレーム更新の速さ（値が小さいほど速い）
-export let FRAME_DURATION = 0.1;			// アニメーションの更新間隔（秒単位：例 0.1秒ごとに1コマ進める）
+export let FRAME_DURATION = 0.07;			// アニメーションの更新間隔（秒単位：例 0.1秒ごとに1コマ進める）
 export let frameTimer = 0;					// コマ切り替え用の経過時間カウンター
 export const MOVE_SPEED = 200; // 1秒あたりの移動ピクセル数
 export const SPRITE_WIDTH = 70;
@@ -217,6 +217,7 @@ export function update(delta)
 	//状態変化
 	if (updateState())
 	{
+		//状態変化したらフレームは最初に
 		currentFrame = 0;
 	}
 
@@ -244,6 +245,16 @@ export function update(delta)
 	const screenX = position.x - camera.x;
 	const screenY = position.y - camera.y;
 
+	//影の描画
+	utils2.drawCircle(
+		ctx, 'rgba(0, 0, 0, 0.6)',
+		screenX + SPRITE_WIDTH / 2 + 0,//基準x
+		screenY + SPRITE_HEIGHT - 13,//基準y
+		SPRITE_WIDTH * 0.25,//幅
+		SPRITE_WIDTH * 0.1//高さ
+	);
+	//utils2.drawShadow(ctx, 'rgba(0, 0, 0, 0.5)', screenX + 5, screenY - 15, SPRITE_WIDTH - 10, SPRITE_HEIGHT);
+
 	// スプライトシートから該当コマだけを切り出して描画する
 	if (flip)
 	{
@@ -266,3 +277,4 @@ export function update(delta)
 		);
 	}
 }
+
