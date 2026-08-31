@@ -5,6 +5,7 @@ import * as input from './input.js';
 import { canvas, ctx } from './engine.js';
 import { MAP_WIDTH, MAP_HEIGHT, camera } from './world.js';
 
+export let isSitting = false;				//立ち/座り
 export let isRunning = true; 				//走り/歩き
 export let state = "idle";
 export let direction = "forward";
@@ -14,7 +15,10 @@ export let currentFrame = 0; 				// 何コマ目を表示しているか(0番目
 //export const ANIMATION_SPEED = 10; 		// フレーム更新の速さ（値が小さいほど速い）
 export let FRAME_DURATION = 0.07;			// アニメーションの更新間隔（秒単位：例 0.1秒ごとに1コマ進める）
 export let frameTimer = 0;					// コマ切り替え用の経過時間カウンター
-export const MOVE_SPEED = 200; // 1秒あたりの移動ピクセル数
+export const MOVE_SPEED = 200; 				// 1秒あたりの移動ピクセル数
+export const MOVE_SPEED_X_RATIO = 1.66;		//横方向の体感速度を補正するための倍率、横長なほど横移動が遅く感じる
+//export const MOVE_SPEED_X = 330;			// 横移動の速さ（1秒あたりのピクセル数）
+//export const MOVE_SPEED_Y = 200;			// 縦移動の速さ（1秒あたりのピクセル数）
 export const SPRITE_WIDTH = 70;
 export const SPRITE_HEIGHT = 95;
 
@@ -34,7 +38,13 @@ export const assetPaths =
 	idle_backward: '/assets/player/マキシミン/idle/backward.png',
 	idle_forside: '/assets/player/マキシミン/idle/forside.png',
 	idle_forward: '/assets/player/マキシミン/idle/forward.png',
-	idle_side: '/assets/player/マキシミン/idle/side.png'
+	idle_side: '/assets/player/マキシミン/idle/side.png',
+
+	/*idle_backside: '/assets/player/マキシミン/idle/backside.png',
+	idle_backward: '/assets/player/マキシミン/idle/backward.png',
+	idle_forside: '/assets/player/マキシミン/idle/forside.png',
+	idle_forward: '/assets/player/マキシミン/idle/forward.png',
+	idle_side: '/assets/player/マキシミン/idle/side.png'*/
 };
 
 
@@ -143,8 +153,10 @@ export function updatePosition(delta)
 		let move = getMovement();
 
 		// 座標を更新
-		position.x += move.x * MOVE_SPEED * delta;
+		position.x += move.x * MOVE_SPEED * MOVE_SPEED_X_RATIO * delta;
 		position.y += move.y * MOVE_SPEED * delta;
+		//position.x += move.x * MOVE_SPEED_X * delta;
+		//position.y += move.y * MOVE_SPEED_Y * delta;
 
 		// 💡変更：画面(canvas)の外ではなく、マップ全体(MAP_WIDTH/MAP_HEIGHT)の外に出ないよう制限する
 		position.x = Math.max(0, Math.min(MAP_WIDTH - SPRITE_WIDTH, position.x));
