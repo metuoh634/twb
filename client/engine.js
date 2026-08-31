@@ -1,13 +1,10 @@
 //import { keys, mouseInfo } from './input.js';
 
-export let canvas;
-export let ctx;
+export let canvas = document.getElementById("gameCanvas");
+export let ctx = canvas.getContext("2d");
 
 export function init()
 {
-	canvas = document.getElementById("gameCanvas");
-	ctx = canvas.getContext("2d");
-
 	repaint();
 
 	return true;

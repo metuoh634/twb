@@ -89,3 +89,77 @@ export function getMouseState_mousewheel(e)
 
 
 
+//バーチャル十字キー（スマホ用）==============================================================
+
+// 現在バーチャル十字キーで入力されている移動方向（-1〜1の範囲、未入力時は0）
+export const virtualMove = { x: 0, y: 0 };
+
+// 今操作中のタッチを追跡するためのID（他の指のタッチと混ざらないようにする）
+let virtualMoveTouchId = null;
+
+// 指を置いた場所（ここを中心にどれだけ離れたかで、方向と強さを決める）
+let virtualMoveOriginX = 0;
+let virtualMoveOriginY = 0;
+
+// スティックが反応する最大距離（px）。これ以上離しても入力の強さは頭打ちになる
+const VIRTUAL_MOVE_RADIUS = 50;
+
+//画面に指を置いたとき
+export function getVirtualMove_touchstart(e)
+{
+	// 既に別の指で操作中なら何もしない（2本指で同時操作させない）
+	if (virtualMoveTouchId !== null)
+		return;
+
+	const touch = e.changedTouches[0];
+
+	// 画面の左半分に置いた指だけを「十字キー操作」として扱う
+	if (touch.clientX > window.innerWidth / 2)
+		return;
+
+	// タッチ操作から発生する余計なマウスイベント（クリック移動）を防ぐ
+	e.preventDefault();
+
+	virtualMoveTouchId = touch.identifier;
+	virtualMoveOriginX = touch.clientX;
+	virtualMoveOriginY = touch.clientY;
+}
+
+//指を動かしたとき
+export function getVirtualMove_touchmove(e)
+{
+	// 今追跡している指を、動いた指の一覧から探す
+	const touch = Array.from(e.changedTouches).find(t => t.identifier === virtualMoveTouchId);
+
+	if (!touch)
+		return;
+
+	e.preventDefault();
+
+	// 指を置いた場所からの移動量
+	const dx = touch.clientX - virtualMoveOriginX;
+	const dy = touch.clientY - virtualMoveOriginY;
+	const dist = Math.hypot(dx, dy);
+
+	if (dist > 0)
+	{
+		// 最大距離でクランプ（頭打ち）しつつ、-1〜1の範囲の強さに変換する
+		const power = Math.min(dist, VIRTUAL_MOVE_RADIUS) / VIRTUAL_MOVE_RADIUS;
+		virtualMove.x = (dx / dist) * power;
+		virtualMove.y = (dy / dist) * power;
+	}
+}
+
+//指を離したとき
+export function getVirtualMove_touchend(e)
+{
+	const touch = Array.from(e.changedTouches).find(t => t.identifier === virtualMoveTouchId);
+
+	if (!touch)
+		return;
+
+	// 操作終了。入力をリセットする
+	virtualMoveTouchId = null;
+	virtualMove.x = 0;
+	virtualMove.y = 0;
+}

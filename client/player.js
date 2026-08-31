@@ -5,22 +5,6 @@ import * as input from './input.js';
 import { canvas, ctx } from './engine.js';
 import { MAP_WIDTH, MAP_HEIGHT, camera } from './world.js';
 
-export const assets = {};
-export const assetPaths =
-{
-	run_backside: '/assets/player/マキシミン/run/backside.png',
-	run_backward: '/assets/player/マキシミン/run/backward.png',
-	run_forside: '/assets/player/マキシミン/run/forside.png',
-	run_forward: '/assets/player/マキシミン/run/forward.png',
-	run_side: '/assets/player/マキシミン/run/side.png',
-
-	idle_backside: '/assets/player/マキシミン/idle/backside.png',
-	idle_backward: '/assets/player/マキシミン/idle/backward.png',
-	idle_forside: '/assets/player/マキシミン/idle/forside.png',
-	idle_forward: '/assets/player/マキシミン/idle/forward.png',
-	idle_side: '/assets/player/マキシミン/idle/side.png'
-};
-
 export let isRunning = true; 				//走り/歩き
 export let state = "idle";
 export let direction = "forward";
@@ -36,6 +20,22 @@ export const SPRITE_HEIGHT = 95;
 
 export let moveTarget = null;// マウスクリックで指定した「目的地」（ワールド座標）、null のときは目的地なし＝マウスでは移動していない状態
 const MOVE_TARGET_THRESHOLD = 4;// 目的地にどれだけ近づいたら「到着」とみなすか（px）
+
+export const assets = {};
+export const assetPaths =
+{
+	run_backside: '/assets/player/マキシミン/run/backside.png',
+	run_backward: '/assets/player/マキシミン/run/backward.png',
+	run_forside: '/assets/player/マキシミン/run/forside.png',
+	run_forward: '/assets/player/マキシミン/run/forward.png',
+	run_side: '/assets/player/マキシミン/run/side.png',
+
+	idle_backside: '/assets/player/マキシミン/idle/backside.png',
+	idle_backward: '/assets/player/マキシミン/idle/backward.png',
+	idle_forside: '/assets/player/マキシミン/idle/forside.png',
+	idle_forward: '/assets/player/マキシミン/idle/forward.png',
+	idle_side: '/assets/player/マキシミン/idle/side.png'
+};
 
 
 //初期化
@@ -66,10 +66,12 @@ function isKeyMoving(key = input.keysPress)
 	return (key.w || key.a || key.s || key.d);
 }
 
-//移動しているかどうか
+//移動しているかどうか（キーボード操作 or バーチャル十字キー or マウスの目的地移動）
 export function isMoving(key = input.keysPress)
 {
-	return isKeyMoving(key) || moveTarget !== null;
+	const virtualMoving = (input.virtualMove.x !== 0 || input.virtualMove.y !== 0);
+
+	return isKeyMoving(key) || virtualMoving || moveTarget !== null;
 }
 
 //キーの移動量取得
@@ -97,6 +99,14 @@ export function getMovement(key = input.keysPress)
 		}
 
 		return { x: moveX, y: moveY };
+	}
+
+	// バーチャル十字キー（スマホ）の入力があれば、それを使う
+	if (input.virtualMove.x !== 0 || input.virtualMove.y !== 0)
+	{
+		// タッチ操作を優先する（マウスクリックでの目的地移動は中断する）
+		moveTarget = null;
+		return { x: input.virtualMove.x, y: input.virtualMove.y };
 	}
 
 	// マウスの目的地に向かって移動する
