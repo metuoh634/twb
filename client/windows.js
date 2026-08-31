@@ -86,6 +86,9 @@ class WindowController
 		// ウィンドウドラッグ用
 		if (this.header)
 		{
+			// スマホでのスクロール等のジェスチャーをブラウザに横取りされないようにする少し動かした瞬間に pointercancel が発生してドラッグが止まる
+			this.header.style.touchAction = 'none';
+
 			//ヘッダーマウスダウン
 			this.header.addEventListener('pointerdown', (e) =>
 			{
@@ -134,6 +137,16 @@ class WindowController
 				this.isResizing = false;
 				activeWindow = null;
 			});
+
+			//ブラウザ都合などで強制的にドラッグが中断された場合の後始末
+			//pointerup が呼ばれずに終わるケースがあるため、これが無いと isDragging が
+			//true のまま固まってしまい、次のドラッグがおかしくなることがある
+			this.header.addEventListener('pointercancel', (e) =>
+			{
+				this.isDragging = false;
+				this.isResizing = false;
+				activeWindow = null;
+			});
 		}
 
 		// 閉じるボタン
@@ -152,6 +165,10 @@ class WindowController
 	//ハンドル要素に「掴んで動かすとリサイズする」処理を付ける共通関数
 	_makeResizable(handle, dir)
 	{
+		// リサイズハンドルもスマホでのジェスチャー横取りを防ぐ
+		handle.style.touchAction = 'none';
+
+
 		handle.addEventListener('pointerdown', (e) =>
 		{
 			// ポインターの入力をこの要素に固定する
@@ -211,6 +228,14 @@ class WindowController
 		{
 			handle.releasePointerCapture(e.pointerId);
 
+			this.isDragging = false;
+			this.isResizing = false;
+			activeWindow = null;
+		});
+
+		// 中断時の後始末（ドラッグ側と同じ理由）
+		handle.addEventListener('pointercancel', (e) =>
+		{
 			this.isDragging = false;
 			this.isResizing = false;
 			activeWindow = null;
