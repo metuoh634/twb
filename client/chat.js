@@ -115,9 +115,6 @@ chatScrollDown.addEventListener("click", () =>
 	chatLog.scrollTop += SCROLL_STEP;
 });
 
-// ログがスクロールされたら（マウスホイールなども含む）つまみの位置を更新する
-chatLog.addEventListener("scroll", updateScrollBar);
-
 // つまみをドラッグしている最中かどうかを覚えておく変数
 let isDraggingThumb = false;
 // ドラッグを開始した瞬間の、マウスのY座標を覚えておく変数
@@ -171,6 +168,9 @@ document.addEventListener("mouseup", () =>
 	isDraggingThumb = false;
 });
 
+
+// ログがスクロールされたら（マウスホイールなども含む）つまみの位置を更新する
+chatLog.addEventListener("scroll", updateScrollBar);
 
 // ログの中身が増えたり減ったりしたときにも、つまみの大きさを更新する
 // MutationObserverは「監視対象の中身が変わったら知らせてくれる」仕組み
