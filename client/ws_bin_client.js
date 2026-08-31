@@ -17,7 +17,8 @@ export const callbacks =
 //WebSocketサーバーに接続し、各種イベントのコールバックを登録する
 export function init()
 {
-	ws = new WebSocket(`ws://localhost:${PORT}`);
+	const host = window.location.hostname;
+	ws = new WebSocket(`ws://${host}:${PORT}`);
 
 	// 💡 【超重要】これをつけることで、サーバーから届くバイナリを正しく受け取れるようになります
 	ws.binaryType = 'arraybuffer';
