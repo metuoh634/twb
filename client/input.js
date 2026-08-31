@@ -134,6 +134,7 @@ export function getVirtualMove_touchmove(e)
 	if (!touch)
 		return;
 
+	// タッチ操作から発生する余計なマウスイベント（クリック移動）を防ぐ
 	e.preventDefault();
 
 	// 指を置いた場所からの移動量
