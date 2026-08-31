@@ -73,7 +73,7 @@ export async function init()
 //足元座標
 export function getFoot(screenX, screenY)
 {
-	return { x: screenX + SPRITE_WIDTH / 2 + 0, y: screenY + SPRITE_HEIGHT - 13 };
+	return { x: screenX + SPRITE_WIDTH / 2 + 0, y: screenY + SPRITE_HEIGHT - 14.5 };
 }
 
 //キーボードのw/a/s/dが押されているかどうか
