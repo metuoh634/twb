@@ -155,11 +155,26 @@ export function updatePosition(delta, move)
 {
 	if (move.x !== 0 || move.y !== 0)
 	{
-		// 座標を更新
-		position.x += move.x * MOVE_SPEED * MOVE_SPEED_X_RATIO * delta;
-		position.y += move.y * MOVE_SPEED * delta;
+		if (moveTarget)
+		{
+			//マウス移動中は、x/yを別々に加速するのではなく
+			// 「進む向き」に応じた1つの速度を、x・yどちらにも同じ倍率でかける
+			// （move.xが1に近い＝横方向に近いほど、速度がMOVE_SPEED_X_RATIO倍に近づく）
+			// こうすることで実際に進む向きが必ずmove.x, move.yと一致し、
+			// 目的地付近で急に向きが変わらなくなる
+			const speed = MOVE_SPEED * (1 + Math.abs(move.x) * (MOVE_SPEED_X_RATIO - 1));
 
-		// 💡変更：画面(canvas)の外ではなく、マップ全体(MAP_WIDTH/MAP_HEIGHT)の外に出ないよう制限する
+			position.x += move.x * speed * delta;
+			position.y += move.y * speed * delta;
+		}
+		else
+		{
+			// キーボード・バーチャル十字キーの場合は、これまで通り横方向にだけ比率を掛ける
+			position.x += move.x * MOVE_SPEED * MOVE_SPEED_X_RATIO * delta;
+			position.y += move.y * MOVE_SPEED * delta;
+		}
+
+		// 画面(canvas)の外ではなく、マップ全体(MAP_WIDTH/MAP_HEIGHT)の外に出ないよう制限する
 		position.x = Math.max(0, Math.min(MAP_WIDTH - SPRITE_WIDTH, position.x));
 		position.y = Math.max(0, Math.min(MAP_HEIGHT - SPRITE_HEIGHT, position.y));
 	}
@@ -277,7 +292,7 @@ export function update(delta)
 		ctx.drawImage(
 			asset.img,
 			currentFrame * asset.frameWidth, 0, asset.frameWidth, asset.frameHeight,
-			-screenX - asset.frameWidth, screenY, asset.frameWidth, asset.frameHeight // 💡変更：position→screenX/screenY
+			-screenX - asset.frameWidth, screenY, asset.frameWidth, asset.frameHeight // position→screenX/screenY
 		);
 		ctx.restore();
 	}
@@ -286,7 +301,7 @@ export function update(delta)
 		ctx.drawImage(
 			asset.img,
 			currentFrame * asset.frameWidth, 0, asset.frameWidth, asset.frameHeight,
-			screenX, screenY, asset.frameWidth, asset.frameHeight // 💡変更：position→screenX/screenY
+			screenX, screenY, asset.frameWidth, asset.frameHeight // position→screenX/screenY
 		);
 	}
 }
