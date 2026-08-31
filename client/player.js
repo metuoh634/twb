@@ -34,18 +34,8 @@ export const MOVE_SPEED = 200; // 1秒あたりの移動ピクセル数
 export const SPRITE_WIDTH = 70;
 export const SPRITE_HEIGHT = 95;
 
-// マウスクリックで指定した「目的地」（ワールド座標）、null のときは目的地なし＝マウスでは移動していない状態
-export let moveTarget = null;
-// 目的地にどれだけ近づいたら「到着」とみなすか（px）
-const MOVE_TARGET_THRESHOLD = 4;
-
-// game.js側から呼び出して、クリックした場所を目的地として登録する関数
-export function setMoveTarget(x, y)
-{
-	moveTarget = { x, y };
-}
-
-
+export let moveTarget = null;// マウスクリックで指定した「目的地」（ワールド座標）、null のときは目的地なし＝マウスでは移動していない状態
+const MOVE_TARGET_THRESHOLD = 4;// 目的地にどれだけ近づいたら「到着」とみなすか（px）
 
 
 //初期化
@@ -199,6 +189,13 @@ export function updateState(key = input.keysPress)
 	flip = f;
 
 	return changed;
+}
+
+
+// クリックした場所を目的地として登録する関数(game.jsなどで呼び出し用)
+export function setMoveTarget(x, y)
+{
+	moveTarget = { x, y };
 }
 
 //画面更新
