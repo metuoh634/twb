@@ -70,6 +70,12 @@ export async function init()
 	}
 }
 
+//足元座標
+export function getFoot(screenX, screenY)
+{
+	return { x: screenX + SPRITE_WIDTH / 2 + 0, y: screenY + SPRITE_HEIGHT - 13 };
+}
+
 //キーボードのw/a/s/dが押されているかどうか
 function isKeyMoving(key = input.keysPress)
 {
@@ -122,11 +128,11 @@ export function getMovement(key = input.keysPress)
 	// マウスの目的地に向かって移動する
 	if (moveTarget)
 	{
-		// プレイヤーの中心座標から目的地までの距離を計算する
-		const centerX = position.x + SPRITE_WIDTH / 2;
-		const centerY = position.y + SPRITE_HEIGHT / 2;
-		const dx = moveTarget.x - centerX;
-		const dy = moveTarget.y - centerY;
+		// スプライトの中央ではなく「足元（下端の中央）」を基準にする、クリックした場所に、見た目の足がぴったり来るようにするため
+		const foot = getFoot(position.x, position.y);
+
+		const dx = moveTarget.x - foot.x;
+		const dy = moveTarget.y - foot.y;
 		const dist = Math.hypot(dx, dy);
 
 		// 十分近づいたら到着とみなし、目的地をクリアする
@@ -145,18 +151,13 @@ export function getMovement(key = input.keysPress)
 }
 
 //位置移動
-export function updatePosition(delta)
+export function updatePosition(delta, move)
 {
-	if (isMoving())
+	if (move.x !== 0 || move.y !== 0)
 	{
-		//移動量取得
-		let move = getMovement();
-
 		// 座標を更新
 		position.x += move.x * MOVE_SPEED * MOVE_SPEED_X_RATIO * delta;
 		position.y += move.y * MOVE_SPEED * delta;
-		//position.x += move.x * MOVE_SPEED_X * delta;
-		//position.y += move.y * MOVE_SPEED_Y * delta;
 
 		// 💡変更：画面(canvas)の外ではなく、マップ全体(MAP_WIDTH/MAP_HEIGHT)の外に出ないよう制限する
 		position.x = Math.max(0, Math.min(MAP_WIDTH - SPRITE_WIDTH, position.x));
@@ -165,7 +166,7 @@ export function updatePosition(delta)
 }
 
 //キャラ(状態、方向、反転)の設定
-export function updateState(key = input.keysPress)
+export function updateState(move)
 {
 	let changed = false;
 	let s = state;
@@ -173,13 +174,10 @@ export function updateState(key = input.keysPress)
 	let f = flip;
 
 	//状態
-	if (isMoving())
+	if (move.x !== 0 || move.y !== 0)
 		s = isRunning ? "run" : "walk";
 	else
 		s = "idle";
-
-	//key.w などの「キーの状態」ではなく、実際の移動方向ベクトルで8方向を判定する、キーボードでもマウスクリック移動でも同じ処理で向きが決まる
-	const move = getMovement();
 
 	// 動いていない場合は、直前の向きをそのまま維持する
 	if (move.x !== 0 || move.y !== 0)
@@ -223,11 +221,14 @@ export function setMoveTarget(x, y)
 //画面更新
 export function update(delta)
 {
+	//移動量はここで1回だけ計算し、updatePositionとupdateStateの両方に渡す、2回計算すると、その間にpositionが変わってしまい向きがズレるため
+	const move = getMovement();
+
 	//移動処理を追加
-	updatePosition(delta);
+	updatePosition(delta, move);
 
 	//状態変化
-	if (updateState())
+	if (updateState(move))
 	{
 		//状態変化したらフレームは最初に
 		currentFrame = 0;
@@ -257,11 +258,11 @@ export function update(delta)
 	const screenX = position.x - camera.x;
 	const screenY = position.y - camera.y;
 
+	const foot = getFoot(screenX, screenY);
+
 	//影の描画
 	utils2.drawCircle(
-		ctx, 'rgba(0, 0, 0, 0.6)',
-		screenX + SPRITE_WIDTH / 2 + 0,//基準x
-		screenY + SPRITE_HEIGHT - 13,//基準y
+		ctx, 'rgba(0, 0, 0, 0.6)', foot.x, foot.y,
 		SPRITE_WIDTH * 0.25,//幅
 		SPRITE_WIDTH * 0.1//高さ
 	);
