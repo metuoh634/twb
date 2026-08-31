@@ -1,5 +1,6 @@
 import { print, addLog } from '../shared/sub.js';
 import * as utils2 from '../shared/utils2.js';
+import * as sub from '../shared/sub.js';
 
 import * as windows from './windows.js';
 import { canvas, ctx } from './engine.js';
@@ -65,6 +66,11 @@ function SendChat(e)
 
 ///////イベント//////////
 
+const chatOpen = document.getElementById("chatOpen");
+chatOpen.addEventListener('click', (e) =>
+{
+	sub.fullScreen();
+});
 
 document.addEventListener('keydown', (e) =>
 {

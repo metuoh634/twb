@@ -185,3 +185,33 @@ export function nearlyEqual(a, b, epsilon = 1e-4)
 {
 	return Math.abs(a - b) <= epsilon;
 }
+
+//ブラウザのアドレスを消して全画面表示 -1=auto ,1=full,2=解除
+export function fullScreen(flg = -1)
+{
+	//自動
+	if (flg == -1)
+		flg = !(document.fullscreenElement);
+
+	if (flg)
+	{
+		// documentElement(html全体)を全画面化する
+		// ※ユーザーのクリックがきっかけでないと動かないので注意
+		document.documentElement.requestFullscreen()
+			.catch((err) =>
+			{
+				// 全画面化に失敗した場合(未対応ブラウザなど)はエラーを表示
+				console.log("全画面化できませんでした:", err);
+			});
+	}
+	else
+	{
+		// exitFullscreen()を呼ぶと、今の全画面表示を解除できる
+		document.exitFullscreen()
+			.catch((err) =>
+			{
+				// すでに全画面でない場合などはエラーになることがある
+				console.log("解除に失敗しました:", err);
+			});
+	}
+}
