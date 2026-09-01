@@ -12,11 +12,21 @@
 
 <body>
 
+	<!--2Dキャンバス　DOMをcanvasに入れるとDOMは消える-->
+	<canvas id="gameCanvas"></canvas>
+
 	<!--デバッグ用-->
 	<div id="debugInfo"></div>
 
-	<canvas id="gameCanvas"></canvas>
-	<!--DOMをcanvasに入れるとDOMは消える-->
+	<!-- ロード画面の構造 -->
+	<div id="loading-screen">
+		<div class="loading-content">
+			<p id="loading-text">Loading... 0%</p>
+			<div class="progress-bar-bg">
+				<div id="progress-bar"></div>
+			</div>
+		</div>
+	</div>
 
 	<!-- tw chat -->
 	<div id="chatArea">

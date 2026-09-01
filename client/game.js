@@ -12,16 +12,36 @@ import * as world from './world.js';
 import * as player from './player.js';
 import * as chat from './chat.js';
 
+// プログレスバーとテキストの更新
+let loadedCount = 0;
+let loadTotal = 6;
+const loadingScreen = document.getElementById('loading-screen');
+const loadingText = document.getElementById('loading-text');
+const progressBar = document.getElementById('progress-bar');
+function updateProgress()
+{
+	loadedCount++;
+
+	const percentage = Math.floor((loadedCount / loadTotal) * 100);
+	loadingText.textContent = `Loading... ${percentage}%`;
+	progressBar.style.width = `${percentage}%`;
+}
+
 //初期化
 async function init()
 {
-	engine.init();
-	windows.init();
-	socket.init();
-	chat.init();
+	engine.init(); updateProgress();
+	windows.init(); updateProgress();
+	socket.init(); updateProgress();
+	chat.init(); updateProgress();
 
-	await player.init();
-	await world.init();
+	await player.init(); updateProgress();
+	await world.init(); updateProgress();
+
+	// 画面をフェードアウトして非表示にする
+	loadingScreen.style.opacity = '0';
+	//loadingScreen.style.display = 'none';
+	setTimeout(() => { loadingScreen.style.display = 'none'; });
 }
 
 ///////イベント//////////
