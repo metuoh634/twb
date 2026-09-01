@@ -92,7 +92,7 @@ export function createTypeFont(type, message)
 	const mes = document.createElement('div');
 
 	//クラス名設定
-	mes.classList.add("chatLog");
+	mes.classList.add("logLine");
 
 	/*
 	// 直接 body に追加する場合は、3D画面の手前に浮かせるために絶対配置が必要です！
@@ -104,9 +104,10 @@ export function createTypeFont(type, message)
 	msgDiv.style.zIndex = '100'; // 3D画面（キャンバス）より手前に出す設定
 	*/
 
-	if (ctype === 'INFO')
-		mes.style.color = 'white';
-	else if (ctype === 'WARNING')
+	//cssそのままを使う
+	//if (ctype === 'INFO')
+	//	mes.style.color = 'white';
+	if (ctype === 'WARNING')
 		mes.style.color = 'yellow';
 	else if (ctype === 'ERROR')
 		mes.style.color = 'red';

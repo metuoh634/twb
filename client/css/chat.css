@@ -100,7 +100,7 @@ TWチャットバー
 }
 
 /*チャットログと入力部分のフォント*/
-#chatLog, #chatInput {
+.logLine, #chatLog, #chatInput {
 
 	/* 読みやすいゲーム風のゴシック体を指定（環境になければ次の候補にフォールバックする） */
 	font-family: "MS PGothic", "Meiryo", sans-serif;
@@ -171,6 +171,12 @@ TWチャットバー
 
 #chatScrollDown {
 	background-image: url("../assets/UI/ChatBar/scrollDown.png");
+}
+
+#chatScrollUp:active,
+#chatScrollDown:active {
+	/* クリック時に左下に移動(左下） */
+	transform: translate(-1px, 1px);
 }
 
 /*スクロールつまみ可動域*/
