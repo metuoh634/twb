@@ -66,6 +66,9 @@ TWチャットバー
 
 /*2段目ログエリア===========================*/
 #chatLogArea {
+	/* 黒の50%半透明 */
+	background-color: rgba(0, 0, 0, 0.534);
+	/*background-color: brown;*/
 	/*background-image: url("./assets/UI/ChatBar/log.png");
 	background-repeat: no-repeat;*/
 
@@ -73,15 +76,14 @@ TWチャットバー
 	flex: 1 1 auto;
 	min-height: 45px;
 
-	/* 黒の50%半透明 */
-	background-color: rgba(0, 0, 0, 0.534);
-
 	/* 中の要素を絶対配置するための基準にする */
 	position: relative;
 }
 
 /*実際のテキストが流れる場所*/
 #chatLog {
+	/*background-color: rgb(21, 55, 250);*/
+
 	position: absolute;
 	top: 0;
 	left: 0;
@@ -100,7 +102,11 @@ TWチャットバー
 }
 
 /*チャットログと入力部分のフォント*/
-.logLine, #chatLog, #chatInput {
+.logLine, #chatInput {
+
+	/*文字数分の横幅*/
+	width: fit-content;
+	/* または display: inline-block; */
 
 	/* 読みやすいゲーム風のゴシック体を指定（環境になければ次の候補にフォールバックする） */
 	font-family: "MS PGothic", "Meiryo", sans-serif;

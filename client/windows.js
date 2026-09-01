@@ -17,7 +17,7 @@ export function init()
 	//chatWindow = new WindowController('#chat-container', '#chat-header', '#chat-close-btn');
 	//chatWindow = new WindowController('#chatArea', '#chatLog', null);
 
-	chatWindow = new WindowController('#chatArea', '#chatLog', null, '#chatTopBar', 'n', 300, 90);//minWidth = 280, minHeight = 180)
+	chatWindow = new WindowController('#chatArea', '#chatLog', null, '#chatTopBar', 'n', 300, 90, true);//minWidth = 280, minHeight = 180)
 	windows.push(chatWindow);
 }
 
