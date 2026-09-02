@@ -144,6 +144,12 @@ export function init(api)
 		try
 		{
 
+			// Render/Koyebなどのホスティング先が「サーバーが生きているか」を定期的に確認しにくる場所、ファイルを読みに行く必要はない
+			if (req.url === '/health')
+			{
+				plainWrite(res, 200, 'OK', { contents: 'OK' }, 'text/plain; charset=utf-8');
+				return;
+			}
 			// 1. 静的ファイルの配信（index.html, main.js, style.css など）
 			if (req.method === 'GET')
 			{
@@ -226,9 +232,10 @@ export function init(api)
 		}
 
 	});
-
-	server.listen(PORT, () =>
-	{
-		console.log(`サーバーが起動しました: http://localhost:${PORT}`);
-	});
 }
+
+//Render/Koyebともに「0.0.0.0（すべての受信を待ち受ける）にバインドすること」を推奨しています
+server.listen(PORT, '0.0.0.0', () =>
+{
+	console.log(`サーバーが起動しました: http://localhost:${PORT}`);
+});

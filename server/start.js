@@ -34,6 +34,29 @@ if (isMainModule)
 
 	//websocket立ち上げ
 	ws.init(web.server);
+
+	//サーバーを安全に終了させるための処理
+	//Render/Koyebはデプロイやスリープの際に「SIGTERM」という終了信号を送ってくる
+	//何もしないと接続中のプレイヤーが前触れなく切断されてしまうので、
+	//先に全員へ切断を知らせてから、行儀よく終了する
+	process.on('SIGTERM', () =>
+	{
+		console.log('SIGTERMを受信しました。サーバーを終了します。');
+
+		//接続中の全クライアントに終了を通知
+		ws.wss.clients.forEach((client) =>
+		{
+			if (client.readyState === 1)
+				client.close(1001, 'サーバーがメンテナンスのため終了します');
+		});
+
+		//新しい接続の受付を止めて、今ある接続が終わるのを待ってから終了する
+		web.server.close(() =>
+		{
+			console.log('サーバーを終了しました。');
+			process.exit(0);
+		});
+	});
 }
 
 
