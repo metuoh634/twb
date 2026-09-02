@@ -14,6 +14,7 @@ const chatArea = document.getElementById("chatArea");
 const chatInput = document.getElementById("chatInput");
 const chatLog = document.getElementById("chatLog");
 
+
 export function init()
 {
 	//this.onChat = this.onChat.bind(this);
