@@ -22,7 +22,9 @@ echo "=== zip展開後の推定サイズ(展開せずに集計) ==="
 unzip -l assets.zip | tail -1
 
 echo "=== 展開 ==="
-unzip -o assets.zip -d ../client/assets/ 
+# unzipは「backslashパス区切り」などの軽微な警告でも終了コード1を返すことがある。
+# set -e が反応して止まってしまうため、ここだけ意図的に「失敗しても止めない」ようにする。
+unzip -o assets.zip -d ../client/assets/ || true
 
 echo "=== 展開後の空き容量 ==="
 df -h
