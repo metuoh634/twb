@@ -22,7 +22,7 @@ echo "=== zip展開後の推定サイズ(展開せずに集計) ==="
 unzip -l assets.zip | tail -1
 
 echo "=== 展開 ==="
-unzip -o assets.zip -d ../client/
+unzip -o assets.zip -d ../client/assets/ 
 
 echo "=== 展開後の空き容量 ==="
 df -h
