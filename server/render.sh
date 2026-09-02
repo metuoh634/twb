@@ -26,6 +26,9 @@ echo "=== 展開 ==="
 # set -e が反応して止まってしまうため、ここだけ意図的に「失敗しても止めない」ようにする。
 unzip -o assets.zip -d ../client/assets/ || true
 
+echo "=== パーミッションの修正 ==="
+chmod -R 755 ../client/assets/
+
 echo "=== 展開後の空き容量 ==="
 df -h
 
