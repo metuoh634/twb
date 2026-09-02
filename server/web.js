@@ -1,15 +1,13 @@
 //import inspector from 'node:inspector'; // 追加：デバッガが接続されているか調べるため
+import { fileURLToPath } from 'url'; // 重複でエラーになるのでstart.jsのみで
 import http from 'http';
-//import fs from 'fs';
 import fsp from 'node:fs/promises';
-import { fileURLToPath } from 'url';
+//import fs from 'fs';
 import path from 'path';
-import { PORT } from '../shared/config.js';
 
+import { PORT } from '../shared/config.js';
 export let server = null;
 export let routeAPI = null;
-
-const isMainModule = import.meta.url === `file:///${process.argv[1].replaceAll("\\", "/")}`;  //直接実行
 
 //https接続サンプル
 /*

@@ -1,11 +1,12 @@
 //import inspector from 'node:inspector'; // 追加：デバッガが接続されているか調べるため
+import { fileURLToPath } from 'url'; // パスとURLを相互変換するための標準機能、isMainModule用
 import * as web from './web.js';
 import * as ws from './ws_bin_server.js'; //webserverに相乗り
 //import * as dbs from './db_sync.js';
 
 //デバッグ情報
 //const isDebugging = inspector.url() !== undefined; //デバッグ実行
-const isMainModule = import.meta.url === `file:///${process.argv[1].replaceAll("\\", "/")}`;  //直接実行
+const isMainModule = process.argv[1] === fileURLToPath(import.meta.url);//直接実行されたかどうか
 //logc("green", (isMainModule ? "(main)" : "") + (isDebugging ? "(debug)" : "") + "で実行中 引数:" + JSON.stringify(process.argv.slice(2)))
 
 //urlの文字列 と 実行する関数 の対応表（ルーティングテーブル）
@@ -24,7 +25,6 @@ const webResult = Object.seal(
 		results: null,
 	});
 */
-
 
 //直接起動時
 if (isMainModule)
@@ -58,8 +58,6 @@ if (isMainModule)
 		});
 	});
 }
-
-
 
 //サンプル
 /*

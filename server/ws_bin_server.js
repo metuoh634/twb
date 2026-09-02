@@ -1,7 +1,10 @@
+import { fileURLToPath } from 'url'; // パスとURLを相互変換するための標準機能、isMainModule用
 import { WebSocketServer } from 'ws';
+
 import { PACKET_TYPE, PORT } from '../shared/config.js';
 //import * as web from './web.js';
-const isMainModule = import.meta.url === `file:///${process.argv[1].replaceAll("\\", "/")}`;  //直接実行
+
+const isMainModule = process.argv[1] === fileURLToPath(import.meta.url);//直接実行されたかどうか
 
 //ポート番号 でWebSocketサーバーを起動
 //const wss = new WebSocketServer({ port: PORT });
@@ -87,7 +90,6 @@ export function init(server)
 	});
 
 }
-
 
 if (isMainModule)
 	init();
