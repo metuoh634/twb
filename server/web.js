@@ -1,3 +1,4 @@
+//import inspector from 'node:inspector'; // 追加：デバッガが接続されているか調べるため
 import http from 'http';
 //import fs from 'fs';
 import fsp from 'node:fs/promises';
@@ -7,6 +8,22 @@ import { PORT } from '../shared/config.js';
 
 export let server = null;
 export let routeAPI = null;
+
+const isMainModule = import.meta.url === `file:///${process.argv[1].replaceAll("\\", "/")}`;  //直接実行
+
+//https接続サンプル
+/*
+import https from 'https';
+import fs from 'fs';
+import { WebSocketServer } from 'ws';
+
+// 証明書の読み込みが必要
+const server = https.createServer({
+	key: fs.readFileSync('path/to/privkey.pem'),
+	cert: fs.readFileSync('path/to/fullchain.pem'),
+}); 
+*/
+
 
 //ブラウザは サーバーが実際に置いているフォルダ構成を知りません
 const __filename = fileURLToPath(import.meta.url);
@@ -232,10 +249,10 @@ export function init(api)
 		}
 
 	});
-}
 
-//Render/Koyebともに「0.0.0.0（すべての受信を待ち受ける）にバインドすること」を推奨しています
-server.listen(PORT, '0.0.0.0', () =>
-{
-	console.log(`サーバーが起動しました: http://localhost:${PORT}`);
-});
+	//Render/Koyebともに「0.0.0.0（すべての受信を待ち受ける）にバインドすること」を推奨しています
+	server.listen(PORT, '0.0.0.0', () =>
+	{
+		console.log(`サーバーが起動しました: http://localhost:${PORT}`);
+	});
+}

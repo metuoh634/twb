@@ -1,6 +1,7 @@
 import { WebSocketServer } from 'ws';
 import { PACKET_TYPE, PORT } from '../shared/config.js';
 //import * as web from './web.js';
+const isMainModule = import.meta.url === `file:///${process.argv[1].replaceAll("\\", "/")}`;  //直接実行
 
 //ポート番号 でWebSocketサーバーを起動
 //const wss = new WebSocketServer({ port: PORT });
@@ -86,3 +87,7 @@ export function init(server)
 	});
 
 }
+
+
+if (isMainModule)
+	init();
