@@ -23,8 +23,10 @@ export function init()
 	const protocol = isSecure ? 'wss' : 'ws';
 
 	//クライアントとサーバーが別ドメインになるので、本番用のURLに書き換えてください
-	const wsHost = isSecure ? "あなたのアプリ名-組織名-xxxx.koyeb.app" : `${window.location.hostname}:${PORT}`;
-	ws = new WebSocket(`${protocol}://${wsHost}`);
+	//const host = isSecure ? "あなたのアプリ名-組織名-xxxx.koyeb.app" : `${window.location.hostname}:${PORT}`;
+	const host = window.location.host;
+
+	ws = new WebSocket(`${protocol}://${host}`);
 
 	// これをつけることで、サーバーから届くバイナリを正しく受け取れるようになります
 	ws.binaryType = 'arraybuffer';
