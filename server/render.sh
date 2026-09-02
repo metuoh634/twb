@@ -24,7 +24,7 @@ unzip -l assets.zip | tail -1
 echo "=== 展開 ==="
 # unzipは「backslashパス区切り」などの軽微な警告でも終了コード1を返すことがある。
 # set -e が反応して止まってしまうため、ここだけ意図的に「失敗しても止めない」ようにする。
-unzip -o assets.zip -d ../client/assets/ || true
+unzip -o assets.zip -d ../client/ || true
 
 echo "=== パーミッションの修正 ==="
 chmod -R 755 ../client/assets/
