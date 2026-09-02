@@ -5,6 +5,7 @@ import * as input from './input.js';
 import { canvas, ctx } from './engine.js';
 import { MAP_WIDTH, MAP_HEIGHT, camera } from './world.js';
 
+export let charactorName = "maximin";
 export let isSitting = false;				//立ち/座り
 export let isRunning = true; 				//走り/歩き
 export let state = "idle";
@@ -28,23 +29,17 @@ const MOVE_TARGET_THRESHOLD = 4;// 目的地にどれだけ近づいたら「到
 export const assets = {};
 export const assetPaths =
 {
-	run_backside: '/assets/player/マキシミン/run/backside.png',
-	run_backward: '/assets/player/マキシミン/run/backward.png',
-	run_forside: '/assets/player/マキシミン/run/forside.png',
-	run_forward: '/assets/player/マキシミン/run/forward.png',
-	run_side: '/assets/player/マキシミン/run/side.png',
+	run_backside: '/assets/player/' + charactorName + '/run/backside.png',
+	run_backward: '/assets/player/' + charactorName + '/run/backward.png',
+	run_forside: '/assets/player/' + charactorName + '/run/forside.png',
+	run_forward: '/assets/player/' + charactorName + '/run/forward.png',
+	run_side: '/assets/player/' + charactorName + '/run/side.png',
 
-	idle_backside: '/assets/player/マキシミン/idle/backside.png',
-	idle_backward: '/assets/player/マキシミン/idle/backward.png',
-	idle_forside: '/assets/player/マキシミン/idle/forside.png',
-	idle_forward: '/assets/player/マキシミン/idle/forward.png',
-	idle_side: '/assets/player/マキシミン/idle/side.png',
-
-	/*idle_backside: '/assets/player/マキシミン/idle/backside.png',
-	idle_backward: '/assets/player/マキシミン/idle/backward.png',
-	idle_forside: '/assets/player/マキシミン/idle/forside.png',
-	idle_forward: '/assets/player/マキシミン/idle/forward.png',
-	idle_side: '/assets/player/マキシミン/idle/side.png'*/
+	idle_backside: '/assets/player/' + charactorName + '/idle/backside.png',
+	idle_backward: '/assets/player/' + charactorName + '/idle/backward.png',
+	idle_forside: '/assets/player/' + charactorName + '/idle/forside.png',
+	idle_forward: '/assets/player/' + charactorName + '/idle/forward.png',
+	idle_side: '/assets/player/' + charactorName + '/idle/side.png',
 };
 
 
