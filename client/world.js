@@ -5,7 +5,7 @@ import { canvas, ctx } from './engine.js';
 export const MAP_WIDTH = 6800;
 export const MAP_HEIGHT = 4500;
 
-export let path = '/assets/MAP/カウル.png';
+export let path = '/assets/MAP/kaul.png';
 export let img = null;
 export const camera = { x: 0, y: 0 };
 
