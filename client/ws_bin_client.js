@@ -17,10 +17,16 @@ export const callbacks =
 //WebSocketサーバーに接続し、各種イベントのコールバックを登録する
 export function init()
 {
-	const host = window.location.hostname;
-	ws = new WebSocket(`ws://${host}:${PORT}`);
+	//本番（https配信のCloudflare Pages）では、暗号化された wss:// を使う必要がある
+	//自分のパソコンで動かして試す時（http）は、今まで通り ws:// でよい
+	const isSecure = (location.protocol === 'https:');
+	const protocol = isSecure ? 'wss' : 'ws';
 
-	// 💡 【超重要】これをつけることで、サーバーから届くバイナリを正しく受け取れるようになります
+	//クライアントとサーバーが別ドメインになるので、本番用のURLに書き換えてください
+	const wsHost = isSecure ? "あなたのアプリ名-組織名-xxxx.koyeb.app" : `${window.location.hostname}:${PORT}`;
+	ws = new WebSocket(`${protocol}://${wsHost}`);
+
+	// これをつけることで、サーバーから届くバイナリを正しく受け取れるようになります
 	ws.binaryType = 'arraybuffer';
 
 	//セッション開始
