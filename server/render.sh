@@ -16,6 +16,11 @@ ls -lh assets.zip
 echo "=== 展開前の空き容量 ==="
 df -h
 
+echo "=== zip展開後の推定サイズ(展開せずに集計) ==="
+# -l : 実際には展開せず、中身の一覧とサイズだけを表示する
+# tail -1 : 最後の合計行だけを見る
+unzip -l assets.zip | tail -1
+
 echo "=== 展開 ==="
 unzip -o assets.zip -d ../client/
 
