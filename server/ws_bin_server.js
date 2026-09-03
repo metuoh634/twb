@@ -52,11 +52,11 @@ export function init(server)
 				const chatMessage = data.toString('utf-8', 1);
 				const chatMessageChars = [...chatMessage];
 
-				if (chatMessageChars.length > 50)
-				{
-					console.log("【検閲】50文字超過のバイナリチャットを破棄しました。");
-					return;
-				}
+				//if (chatMessageChars.length > 50)
+				//{
+				//	console.log("【検閲】50文字超過のバイナリチャットを破棄しました。");
+				//	return;
+				//}
 			}
 			// 移動
 			else if (dataType === PACKET_TYPE.MOVE) // 💡 数字の「2」の代わりに定義を使う！

@@ -33,27 +33,26 @@ TWチャットバー
 /*チャット上部===========================*/
 #chatTopBar {
 
-	background-image: url("../assets/ui/ChatBar/topBar.png");
-	/*background-color: aqua;*/
 	width: 100%;
 	height: 7px;
 
-	/*画像リピート*/
-	/*background-repeat: repeat-x;*/
+	border-image-source: url("../assets/ui/ChatBar/topBar.png");
 
-	/*1枚の伸縮*/
-	background-size: 100% 100%;
-	background-repeat: no-repeat;
+	/* 画像の切り分け位置（順番は 上=0 右=8 下=0 左=8）
+		   上下は0＝画像の高さ全部をそのまま使う（この画像は上下で状態が分かれていないため）
+		   左右の 8 は「端の模様が終わる位置」のpx数（実際の画像に合わせて調整） */
+	border-image-slice: 0 35 0 8 fill;
+
+	/* 画面上で「伸縮させない端の幅」
+		   上下は0＝縦方向はそのまま高さいっぱい表示
+		   左右はスライスと同じ値にすると自然に見える */
+	border-image-width: 0 35px 0 8px;
 
 	/* 親の高さが変わってもtopBar自体は縮まないようにする */
 	flex-shrink: 0;
 
-	/* 入力欄は横方向に伸びる想定なので、繰り返し・伸縮ではなくこう指定 */
-	/*background-size: 100% 100%;*/
-
-	/* スマホのスクロール等のジェスチャーに横取りされないようにする */
+	/* (JavaScriptから行う)スマホのスクロール等のジェスチャーに横取りされないようにする */
 	/*touch-action: none;*/
-
 }
 
 /*2段目ログエリア===========================*/
