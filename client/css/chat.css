@@ -226,7 +226,7 @@ TWチャットバー
 
 	/* 縦方向（垂直）の中央に揃える */
 	align-items: center;
-	padding-left: 3px;
+	padding-left: 4px;
 	padding-right: 3px;
 }
 
