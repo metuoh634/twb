@@ -102,7 +102,7 @@ TWチャットバー
 }
 
 /*チャットログと入力部分のフォント*/
-.logLine, #chatInput {
+.logLine, #chatUnder input {
 
 	/*文字数分の横幅*/
 	width: fit-content;
@@ -246,25 +246,23 @@ TWチャットバー
 
 /* 耳打ちユーザー*/
 #chatWhisperUser {
+	max-width: 109px;
 	width: 109px;
 	height: 25px;
-	background-image: url("../assets/ui/ChatBar/whisperUser.png");
-	background-repeat: no-repeat;
-	background-size: contain;
-	background-position: top left;
-	/* ★ボタンではないのでカーソルは指定しない（テキストなら初期値のまま） */
 }
-/*#chatWhisperUser:active {
-	background-image: url("../assets/ui/ChatBar/whisperUser_push.png");
-}*/
 
 /*チャット入力バー*/
 #chatInput {
-	/* ★入力欄なので、残りの横幅いっぱいまで伸びるようにする */
-	flex: 1 1 auto;
 
 	width: 261px;
 	height: 25px;
+}
+
+/*チャット入力バー*/
+#chatUnder input {
+	/* ★入力欄なので、残りの横幅いっぱいまで伸びるようにする */
+	flex: 1 1 auto;
+
 	padding: 4px 8px 4px 8px;
 
 	/*   background だと画像全体を単純に引き伸ばすので、端の模様まで潰れてぼやける。
@@ -297,10 +295,12 @@ TWチャットバー
 	/* パディング分を含めてwidth/heightを計算させる（画像からはみ出さないため） */
 	box-sizing: border-box;
 }
-#chatInput:focus {
+#chatUnder input:focus {
 	/* フォーカス時は画像の「下半分(25〜50px)」を使うよう、上下の数値を入れ替えるだけ */
 	border-image-slice: 25 8 0 8 fill;
 }
+
+
 /* 何も入力していないときに表示される案内文（プレースホルダー）の色 */
 /*#chatInput::placeholder {
 	color: rgba(255, 255, 255, 0.6);
