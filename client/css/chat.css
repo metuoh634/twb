@@ -33,7 +33,7 @@ TWチャットバー
 /*チャット上部===========================*/
 #chatTopBar {
 
-	background-image: url("../assets/UI/ChatBar/topBar.png");
+	background-image: url("../assets/ui/ChatBar/topBar.png");
 	/*background-color: aqua;*/
 	width: 100%;
 	height: 7px;
@@ -69,7 +69,7 @@ TWチャットバー
 	/* 黒の50%半透明 */
 	background-color: rgba(0, 0, 0, 0.534);
 	/*background-color: brown;*/
-	/*background-image: url("./assets/UI/ChatBar/log.png");
+	/*background-image: url("./assets/ui/ChatBar/log.png");
 	background-repeat: no-repeat;*/
 
 	/* 固定の height ではなく、余ったスペースを全部使う設定に変える（min-heightで今までと同じ最低45pxは確保） */
@@ -172,11 +172,11 @@ TWチャットバー
 }
 
 #chatScrollUp {
-	background-image: url("../assets/UI/ChatBar/scrollUp.png");
+	background-image: url("../assets/ui/ChatBar/scrollUp.png");
 }
 
 #chatScrollDown {
-	background-image: url("../assets/UI/ChatBar/scrollDown.png");
+	background-image: url("../assets/ui/ChatBar/scrollDown.png");
 }
 
 #chatScrollUp:active,
@@ -209,7 +209,7 @@ TWチャットバー
 
 	cursor: pointer;
 
-	background-image: url("../assets/UI/ChatBar/scrollBar.png");
+	background-image: url("../assets/ui/ChatBar/scrollBar.png");
 	background-repeat: no-repeat;
 
 	/* containだと縦横比が保たれて画像が伸びないので、要素の高さいっぱいまで画像自体を引き伸ばすように変更する */
@@ -220,7 +220,7 @@ TWチャットバー
 
 /*チャット3段目===========================*/
 #chatUnder {
-	background-image: url("../assets/UI/ChatBar/under.png");
+	background-image: url("../assets/ui/ChatBar/under.png");
 	height: 33px;
 
 	/*1枚の伸縮*/
@@ -248,14 +248,14 @@ TWチャットバー
 #chatWhisperUser {
 	width: 109px;
 	height: 25px;
-	background-image: url("../assets/UI/ChatBar/whisperUser.png");
+	background-image: url("../assets/ui/ChatBar/whisperUser.png");
 	background-repeat: no-repeat;
 	background-size: contain;
 	background-position: center;
 	/* ★ボタンではないのでカーソルは指定しない（テキストなら初期値のまま） */
 }
 /*#chatWhisperUser:active {
-	background-image: url("../assets/UI/ChatBar/whisperUser_push.png");
+	background-image: url("../assets/ui/ChatBar/whisperUser_push.png");
 }*/
 
 /*チャット入力バー*/
@@ -270,7 +270,7 @@ TWチャットバー
 
 	width: 261px;
 	height: 25px;
-	background-image: url("../assets/UI/ChatBar/input.png");
+	background-image: url("../assets/ui/ChatBar/input.png");
 	/* 入力欄は横方向に伸びる想定なので、繰り返し・伸縮ではなくこう指定 */
 	background-repeat: no-repeat;
 	background-size: 100% 100%;
@@ -288,7 +288,7 @@ TWチャットバー
 	/*フォントはログと合わせるのでここに書かない*/
 }
 #chatInput:focus {
-	background-image: url("../assets/UI/ChatBar/inputing.png");
+	background-image: url("../assets/ui/ChatBar/inputing.png");
 }
 /* 何も入力していないときに表示される案内文（プレースホルダー）の色 */
 /*#chatInput::placeholder {
@@ -311,52 +311,52 @@ TWチャットバー
 }
 
 #chatOpen {
-	background-image: url("../assets/UI/ChatBar/open.png");
+	background-image: url("../assets/ui/ChatBar/open.png");
 }
 #chatOpen:active {
-	background-image: url("../assets/UI/ChatBar/open_push.png");
+	background-image: url("../assets/ui/ChatBar/open_push.png");
 }
 
 #chatMail {
-	background-image: url("../assets/UI/ChatBar/mail.png");
+	background-image: url("../assets/ui/ChatBar/mail.png");
 }
 #chatMail:active {
-	background-image: url("../assets/UI/ChatBar/mail_push.png");
+	background-image: url("../assets/ui/ChatBar/mail_push.png");
 }
 
 #chatMemo {
-	background-image: url("../assets/UI/ChatBar/memo.png");
+	background-image: url("../assets/ui/ChatBar/memo.png");
 }
 #chatMemo:active {
-	background-image: url("../assets/UI/ChatBar/memo_push.png");
+	background-image: url("../assets/ui/ChatBar/memo_push.png");
 }
 
 #chatMessanger {
-	background-image: url("../assets/UI/ChatBar/messanger.png");
+	background-image: url("../assets/ui/ChatBar/messanger.png");
 }
 #chatMessanger:active {
-	background-image: url("../assets/UI/ChatBar/messanger_push.png");
+	background-image: url("../assets/ui/ChatBar/messanger_push.png");
 }
 
 #chatDM {
-	background-image: url("../assets/UI/ChatBar/dm.png");
+	background-image: url("../assets/ui/ChatBar/dm.png");
 }
 #chatDM:active {
-	background-image: url("../assets/UI/ChatBar/dm_push.png");
+	background-image: url("../assets/ui/ChatBar/dm_push.png");
 }
 
 #chatFixedText {
-	background-image: url("../assets/UI/ChatBar/fixedText.png");
+	background-image: url("../assets/ui/ChatBar/fixedText.png");
 }
 #chatFixedText:active {
-	background-image: url("../assets/UI/ChatBar/fixedText_push.png");
+	background-image: url("../assets/ui/ChatBar/fixedText_push.png");
 }
 
 #chatEmote {
-	background-image: url("../assets/UI/ChatBar/emote.png");
+	background-image: url("../assets/ui/ChatBar/emote.png");
 }
 #chatEmote:active {
-	background-image: url("../assets/UI/ChatBar/emote_push.png");
+	background-image: url("../assets/ui/ChatBar/emote_push.png");
 }
 
 
