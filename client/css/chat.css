@@ -235,8 +235,8 @@ TWチャットバー
 
 	/* 縦方向（垂直）の中央に揃える */
 	align-items: center;
-	padding-left: 2px;
-	padding-right: 2px;
+	padding-left: 3px;
+	padding-right: 3px;
 }
 
 /* #chatUnder の直下にあるすべての要素に margin: 1px を適用 */
@@ -251,7 +251,7 @@ TWチャットバー
 	background-image: url("../assets/ui/ChatBar/whisperUser.png");
 	background-repeat: no-repeat;
 	background-size: contain;
-	background-position: center;
+	background-position: top left;
 	/* ★ボタンではないのでカーソルは指定しない（テキストなら初期値のまま） */
 }
 /*#chatWhisperUser:active {
@@ -261,34 +261,45 @@ TWチャットバー
 /*チャット入力バー*/
 #chatInput {
 	/* ★入力欄なので、残りの横幅いっぱいまで伸びるようにする */
-
-	/*「画面（親要素）の空きスペースに合わせて親要素内で伸縮し、コンテンツに応じた初期サイズを持つ」 設定です。
-	 1 （flex-grow / 伸長係数）: 親要素に余白がある場合、他の要素と分かち合って拡大します。 
-	 1 （flex-shrink / 収縮係数）: 親要素からはみ出る場合、他の要素に合わせて縮小します。 
-	 auto （flex-basis / 基本サイズ）: 要素の初期サイズを width や height（未指定の場合はコンテンツの大きさ）に基づいて決定します。*/
 	flex: 1 1 auto;
 
 	width: 261px;
 	height: 25px;
-	background-image: url("../assets/ui/ChatBar/input.png");
-	/* 入力欄は横方向に伸びる想定なので、繰り返し・伸縮ではなくこう指定 */
-	background-repeat: no-repeat;
-	background-size: 100% 100%;
 
-	/* input要素にすると付いてしまう標準の枠線・背景を消す */
-	border: none;
+	/*   background だと画像全体を単純に引き伸ばすので、端の模様まで潰れてぼやける。
+	   border-image なら画像を9分割して「両端はそのまま・真ん中だけ」伸縮できる。 */
+	border-image-source: url("../assets/ui/ChatBar/input.png");
+
+	/* 画像の切り分け位置（順番は 上 右 下 左）
+	   ・上=0, 下=25 → 縦50pxの画像のうち「上半分(0〜25px)」＝通常時の絵を使う
+	   ・左右の 8 は「端の丸み・模様が終わる位置」の px 数（実際の画像に合わせて調整してください） */
+	border-image-slice: 0 8 25 8 fill;
+
+	/* 画面上で「伸縮させない端の幅」
+	   上下は0＝真ん中の部分が縦いっぱいまで埋まる
+	   左右はスライスと同じ値にすると自然に見える */
+	border-image-width: 0 8px 0 8px;
+
+	/* 真ん中の伸びる部分の処理方法
+	   stretch：単純に引き伸ばす（＝今までのぼやけの原因）
+	   round  ：画像を繰り返しつつ幅に合わせて自動調整するのでぼやけにくい */
+	border-image-repeat: round;
+
+	/* border-image を効かせるには border-style を none 以外にする必要がある
+	   枠線の色そのものは不要なので透明にしておく */
+	border-style: solid;
+	border-color: transparent;
+	/* ▲ここまで変更 */
+
 	outline: none;
 	background-color: transparent;
 
-	/* パディング分を含めてwidth/heightを計算させる（画像からはみ出さないため） */
 	box-sizing: border-box;
-	/* 文字が画像の枠にくっつかないように余白を作る(上、右、下、左) */
 	padding: 4px 8px 4px 8px;
-
-	/*フォントはログと合わせるのでここに書かない*/
 }
 #chatInput:focus {
-	background-image: url("../assets/ui/ChatBar/inputing.png");
+	/* フォーカス時は画像の「下半分(25〜50px)」を使うよう、上下の数値を入れ替えるだけ */
+	border-image-slice: 25 8 0 8 fill;
 }
 /* 何も入力していないときに表示される案内文（プレースホルダー）の色 */
 /*#chatInput::placeholder {
@@ -298,67 +309,42 @@ TWチャットバー
 /*その他ボタン*/
 /* チャット下部ボタン共通のスタイル（サイズ・見え方などボタン全部で同じ部分をここにまとめる） */
 .chatBtn {
-	width: 24px;
-	height: 24px;
+	/*実際18or19*/
+	width: 19px;
+	height: 19px;
 
 	background-repeat: no-repeat;
 	/* 画像が要素からはみ出したり伸びたりしないようにする */
 	/*background-size: contain;*/
 	/*位置が真ん中になる？*/
-	background-position: center;
+	background-position: top left;
 
 	cursor: pointer;
 }
-
+.chatBtn:active {
+	background-position: bottom left;
+}
 #chatOpen {
 	background-image: url("../assets/ui/ChatBar/open.png");
 }
-#chatOpen:active {
-	background-image: url("../assets/ui/ChatBar/open_push.png");
-}
-
 #chatMail {
 	background-image: url("../assets/ui/ChatBar/mail.png");
 }
-#chatMail:active {
-	background-image: url("../assets/ui/ChatBar/mail_push.png");
-}
-
 #chatMemo {
 	background-image: url("../assets/ui/ChatBar/memo.png");
 }
-#chatMemo:active {
-	background-image: url("../assets/ui/ChatBar/memo_push.png");
-}
-
 #chatMessanger {
 	background-image: url("../assets/ui/ChatBar/messanger.png");
 }
-#chatMessanger:active {
-	background-image: url("../assets/ui/ChatBar/messanger_push.png");
-}
-
 #chatDM {
 	background-image: url("../assets/ui/ChatBar/dm.png");
 }
-#chatDM:active {
-	background-image: url("../assets/ui/ChatBar/dm_push.png");
-}
-
 #chatFixedText {
 	background-image: url("../assets/ui/ChatBar/fixedText.png");
 }
-#chatFixedText:active {
-	background-image: url("../assets/ui/ChatBar/fixedText_push.png");
-}
-
 #chatEmote {
 	background-image: url("../assets/ui/ChatBar/emote.png");
 }
-#chatEmote:active {
-	background-image: url("../assets/ui/ChatBar/emote_push.png");
-}
-
 
 /* ==========================================================================
    チャットバブル
