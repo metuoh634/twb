@@ -265,6 +265,7 @@ TWチャットバー
 
 	width: 261px;
 	height: 25px;
+	padding: 4px 8px 4px 8px;
 
 	/*   background だと画像全体を単純に引き伸ばすので、端の模様まで潰れてぼやける。
 	   border-image なら画像を9分割して「両端はそのまま・真ん中だけ」伸縮できる。 */
@@ -289,13 +290,12 @@ TWチャットバー
 	   枠線の色そのものは不要なので透明にしておく */
 	border-style: solid;
 	border-color: transparent;
-	/* ▲ここまで変更 */
 
+	/* input要素にすると付いてしまう標準の枠線・背景を消す */
 	outline: none;
 	background-color: transparent;
-
+	/* パディング分を含めてwidth/heightを計算させる（画像からはみ出さないため） */
 	box-sizing: border-box;
-	padding: 4px 8px 4px 8px;
 }
 #chatInput:focus {
 	/* フォーカス時は画像の「下半分(25〜50px)」を使うよう、上下の数値を入れ替えるだけ */
