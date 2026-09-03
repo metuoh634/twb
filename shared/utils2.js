@@ -21,7 +21,7 @@ export function loadImage(src)
 		}
 		img.onerror = (err) =>
 		{
-			reject(err);
+			reject(new Error(`画像の読み込みに失敗しました: ${src}`));
 		}
 		img.src = src;
 	});
