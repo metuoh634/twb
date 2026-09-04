@@ -53,9 +53,9 @@ const chatMessanger = document.getElementById("chatMessanger");
 const chatDM = document.getElementById("chatDM");
 const chatFixedText = document.getElementById("chatFixedText");
 const chatEmote = document.getElementById("chatEmote");
-
 const chatRange = document.getElementById("chatRange");
 
+//chatRange表示
 chatOpen.addEventListener('click', (e) =>
 {
 	e.stopPropagation(); // ドキュメント側へのクリックイベント伝播を防止
@@ -69,13 +69,7 @@ chatOpen.addEventListener('click', (e) =>
 		chatRange.style.top = `${y}px`;*/
 });
 
-chatEmote.addEventListener('click', (e) =>
-{
-	//画面フルスクリーン
-	windows.chatWindow.restoreFullScreen();
-});
-
-// chatRange内のボタンをクリックしたとき、または外側をクリックしたときに非表示にする
+// chatRange非表示
 document.addEventListener('click', (e) =>
 {
 	if (chatRange.style.display === 'flex')
@@ -86,6 +80,12 @@ document.addEventListener('click', (e) =>
 			chatRange.style.display = 'none';
 		}
 	}
+});
+
+//画面フルスクリーン
+chatFixedText.addEventListener('click', (e) =>
+{
+	windows.chatWindow.restoreFullScreen();
 });
 
 
