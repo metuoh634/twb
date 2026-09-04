@@ -151,6 +151,10 @@ export function getVirtualMove_touchmove(e)
 		return;
 	}
 
+	//課題
+	//指が2本かつスライドさせるとデフォルトのスクロール判定されてしまうが
+	//その処理を止めてしまうとズームインアウトもできない
+
 	// 今追跡している指を、動いた指の一覧から探す
 	const touch = Array.from(e.changedTouches).find(t => t.identifier === virtualMoveTouchId);
 
@@ -175,11 +179,29 @@ export function getVirtualMove_touchmove(e)
 }
 
 //指を離したとき
+let lastTapTime = 0;// 最後にタップ（指を離した瞬間）した時刻を覚えておく変数
+const DOUBLE_TAP_THRESHOLD = 300;// これより短い間隔で2回タップされたら「ダブルタップ」とみなす時間（ミリ秒）
 export function getVirtualMove_touchend(e)
 {
 	//let touches = e.touches ? e.touches.length : 0;
 	//addLog("INFO", "touch_end(" + touches + ")");
 
+	// 今の時刻を取得
+	const now = Date.now();
+
+	// 前回のタップからの経過時間
+	const interval = now - lastTapTime;
+
+	// 一定時間以内の2回目のタップなら、ブラウザの拡大処理をキャンセルする
+	if (interval > 0 && interval < DOUBLE_TAP_THRESHOLD)
+		e.preventDefault();
+
+	// 今回のタップ時刻を、次回判定用に覚えておく
+	lastTapTime = now;
+
+
+
+	// 今追跡している指を、動いた指の一覧から探す
 	const touch = Array.from(e.changedTouches).find(t => t.identifier === virtualMoveTouchId);
 
 	if (!touch)
