@@ -1,3 +1,4 @@
+import { print, addLog } from '../shared/sub.js';
 import * as engine from './engine.js';
 
 
@@ -107,8 +108,16 @@ const VIRTUAL_MOVE_RADIUS = 50;
 //画面に指を置いたとき
 export function getVirtualMove_touchstart(e)
 {
+	//let touches = e.touches ? e.touches.length : 0;
+	//addLog("INFO", "touch_start(" + touches + ")");
+
 	// 既に別の指で操作中なら何もしない（2本指で同時操作させない）
 	if (virtualMoveTouchId !== null)
+		return;
+
+	// 画面に触れている指が2本以上＝ピンチズームの可能性があるので、
+	// 十字キーとしては扱わず、preventDefault()も呼ばずにブラウザに判断を任せる
+	if (e.touches.length >= 2)
 		return;
 
 	const touch = e.changedTouches[0];
@@ -118,7 +127,8 @@ export function getVirtualMove_touchstart(e)
 		return;
 
 	// タッチ操作から発生する余計なマウスイベント（クリック移動）を防ぐ
-	e.preventDefault();
+	// この時点では「ピンチの1本目の指」なのか「十字キー操作の指」なのか区別できないため、判断を touchmove まで保留する
+	//e.preventDefault();
 
 	virtualMoveTouchId = touch.identifier;
 	virtualMoveOriginX = touch.clientX;
@@ -128,6 +138,19 @@ export function getVirtualMove_touchstart(e)
 //指を動かしたとき
 export function getVirtualMove_touchmove(e)
 {
+	//let touches = e.touches ? e.touches.length : 0;
+	//addLog("INFO", "touch_move(" + touches + ")");
+
+	// 途中から2本目の指が触れた＝ピンチズームに切り替わったとみなし、
+	// 十字キー操作を強制終了してブラウザの標準ジェスチャーに譲る
+	if (e.touches.length >= 2)
+	{
+		virtualMoveTouchId = null;
+		virtualMove.x = 0;
+		virtualMove.y = 0;
+		return;
+	}
+
 	// 今追跡している指を、動いた指の一覧から探す
 	const touch = Array.from(e.changedTouches).find(t => t.identifier === virtualMoveTouchId);
 
@@ -154,6 +177,9 @@ export function getVirtualMove_touchmove(e)
 //指を離したとき
 export function getVirtualMove_touchend(e)
 {
+	//let touches = e.touches ? e.touches.length : 0;
+	//addLog("INFO", "touch_end(" + touches + ")");
+
 	const touch = Array.from(e.changedTouches).find(t => t.identifier === virtualMoveTouchId);
 
 	if (!touch)

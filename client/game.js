@@ -90,12 +90,11 @@ document.addEventListener('click', (e) =>
 
 
 // バーチャル十字キー（スマホの画面左半分でのタッチ操作）
-//{ passive: false } にしているのは、e.preventDefault() を効かせるためです（passive: true だと preventDefault が無視されます）。
+// passive: true だと preventDefault が無視されます
 canvas.addEventListener('touchstart', (e) => input.getVirtualMove_touchstart(e), { passive: false });
 canvas.addEventListener('touchmove', (e) => input.getVirtualMove_touchmove(e), { passive: false });
 canvas.addEventListener('touchend', (e) => input.getVirtualMove_touchend(e), { passive: false });
 canvas.addEventListener('touchcancel', (e) => input.getVirtualMove_touchend(e), { passive: false });
-
 
 document.addEventListener('keydown', (e) =>
 {
