@@ -202,7 +202,14 @@ document.addEventListener('contextmenu', (e) =>
 // 画面リサイズへの対応
 window.addEventListener('resize', () =>
 {
+	//キャンバスリフレッシュ
 	engine.repaint();
+
+	//はみ出し抑制
+	windows.windows.forEach(win => 
+	{
+		win.insideScreen();
+	});
 });
 
 // ページ読み込み時

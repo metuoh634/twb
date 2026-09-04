@@ -373,12 +373,13 @@ class WindowController
 		const currentWidth = window.visualViewport ? window.visualViewport.width : window.innerWidth;
 		const currentHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
 
+		const rect = this.container.getBoundingClientRect();
+
 		// style.leftは"100px"のような文字列なので、parseFloatで数値に変換する
-		let newLeft = parseFloat(this.container.style.left) || 0;
-		let newTop = parseFloat(this.container.style.top) || 0;
+		let newLeft = parseFloat(rect.left) || 0;
+		let newTop = parseFloat(rect.top) || 0;
 
 		// はみ出し判定には要素自身の幅・高さが必要なので取得しておく
-		const rect = this.container.getBoundingClientRect();
 		const elemWidth = rect.width;
 		const elemHeight = rect.height;
 
