@@ -56,7 +56,10 @@ const chatFixedText = document.getElementById("chatFixedText");
 const chatEmote = document.getElementById("chatEmote");
 const chatRange = document.getElementById("chatRange");
 
-//chatRange表示
+const debugInfo = document.getElementById("debugInfo");
+
+
+//チャット範囲選択
 chatOpen.addEventListener('click', (e) =>
 {
 	e.stopPropagation(); // ドキュメント側へのクリックイベント伝播を防止
@@ -69,6 +72,14 @@ chatOpen.addEventListener('click', (e) =>
 	/*	chatRange.style.left = `${x}px`;
 		chatRange.style.top = `${y}px`;*/
 });
+
+//デバッグ表示
+chatMail.addEventListener('click', (e) =>
+{
+	windows.show(debugInfo, !windows.isVisible(debugInfo));
+});
+
+
 
 //BGM再生
 chatEmote.addEventListener('click', (e) =>
@@ -144,15 +155,7 @@ document.addEventListener('mousedown', (e) =>
 	//マウス状態更新
 	input.getMouseState_mousedown(e);
 
-	// キャンバス上を左クリックしたら、その場所を目的地にして歩き出す
-	if (mouseInfo.left && e.target === canvas)
-	{
-		// 画面上のクリック位置(clientX/Y)にカメラのズレ(camera.x/y)を足して、マップ上の座標に変換する
-		const worldX = e.clientX + world.camera.x;
-		const worldY = e.clientY + world.camera.y;
-
-		player.setMoveTarget(worldX, worldY);
-	}
+	player.mousedown(e);
 });
 // マウスを動かしているとき
 document.addEventListener('mousemove', (e) =>
@@ -182,15 +185,11 @@ document.addEventListener('mouseup', (e) =>
 	//チャットスクロールバー
 	chat.mouseup(e);
 
-	//addLog("INFO", "window.mouseup" + mouseInfo.right);
-	//windows.mouseup(e);
-
 });
 // マウスホイールのイベント
 window.addEventListener('wheel', (e) =>
 {
 	input.getMouseState_mousewheel(e);
-	//engine.camera_MouseWheel();
 });
 
 // 画面外に出た

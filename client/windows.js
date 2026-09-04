@@ -4,9 +4,10 @@ import { addLog } from '../shared/sub.js';
 export let activeWindow = null;
 export let windows = [];
 
+export let debugInfo;
+export let chatWindow;
 
 //チャットバー
-export let chatWindow;
 export const chatArea = document.getElementById("chatArea");
 export const chatInput = document.getElementById("chatInput");
 export const chatLog = document.getElementById("chatLog");
@@ -14,10 +15,21 @@ export const chatLog = document.getElementById("chatLog");
 //ウィンドウクラス追加 呼び出し
 export function init()
 {
-	//chatWindow = new WindowController('#chat-container', '#chat-header', '#chat-close-btn');
+	//chatWindow = new WindowController('#chat-container', '#chat-drager', '#chat-close-btn');
 	//chatWindow = new WindowController('#chatArea', '#chatLog', null);
 
-	chatWindow = new WindowController('#chatArea', '#chatLog', null, '#chatTopBar', 'n', 300, 90, true);//minWidth = 280, minHeight = 180)
+	chatWindow = new WindowController({
+		container: '#chatArea',
+		drager: '#chatLog',
+		//resizer: '#chatTopBar',
+		resizeDir: 'n',
+		minWidth: 300,
+		minHeight: 90,
+		childLock: true
+	});
+
+	debugInfo = new WindowController({ container: '#debugInfo', defaultDisplay: "block" });
+
 	windows.push(chatWindow);
 }
 
@@ -26,25 +38,31 @@ export function init()
 //ウィンドウズクラス
 class WindowController
 {
-	//targetSelector　全面サイズ変更
-	//headerSelector　動かしたいウィンドウ
-	//resizeBarSelector　特定サイズ変更用
-	//resizeBarDir　特定サイズ変更位置
+	//container　全面サイズ変更
+	//drager　動かしたいウィンドウ
+	//resizer　特定サイズ変更用
+	//resizeDir　特定サイズ変更位置
 	//minWidth　最小横幅
 	//minHeight　最小高さ
-	constructor(targetSelector, headerSelector = null, closebtnSelector = null,
-		resizeBarSelector = null, resizeBarDir = 'n', minWidth = 280, minHeight = 180, childLock = false)
+	constructor({ container, drager = null, closer = null,
+		resizer = null, resizeDir = 'n', minWidth = 280, minHeight = 180, childLock = false, defaultDisplay = null })
 	{
-		this.container = typeof targetSelector === 'string' ? document.querySelector(targetSelector) : targetSelector;
-		this.header = typeof headerSelector === 'string' ? document.querySelector(headerSelector) : headerSelector;
-		this.closebtn = typeof closebtnSelector === 'string' ? document.querySelector(closebtnSelector) : closebtnSelector;
-		this.resizeBar = typeof resizeBarSelector === 'string' ? document.querySelector(resizeBarSelector) : resizeBarSelector;
+		this.container = typeof container === 'string' ? document.querySelector(container) : container;
+		this.drager = typeof drager === 'string' ? document.querySelector(drager) : drager;
+		this.closer = typeof closer === 'string' ? document.querySelector(closer) : closer;
+		this.resizer = typeof resizer === 'string' ? document.querySelector(resizer) : resizer;
 
 		if (!this.container)
 		{
 			addLog("WARNING", '対象のウィンドウ要素が見つかりませんでした。');
 			return;
 		}
+
+		//初期値noneの場合はデフォルトを指定する
+		if (defaultDisplay)
+			this.defaultDisplay = defaultDisplay;
+		else
+			this.defaultDisplay = getComputedStyle(this.container).display;
 
 		this.childLock = childLock;
 
@@ -78,31 +96,31 @@ class WindowController
 		});
 
 		//ウィンドウリサイズ
-		if (this.resizeBar)
+		if (this.resizer)
 		{
-			this._makeResizable(this.resizeBar, resizeBarDir);
+			this._makeResizable(this.resizer, resizeDir);
 		}
 
 		// ウィンドウドラッグ用
-		if (this.header)
+		if (this.drager)
 		{
 			// スマホでのスクロール等のジェスチャーをブラウザに横取りされないようにする少し動かした瞬間に pointercancel が発生してドラッグが止まる
-			this.header.style.touchAction = 'none';
+			this.drager.style.touchAction = 'none';
 
 			//ヘッダーマウスダウン
-			this.header.addEventListener('pointerdown', (e) =>
+			this.drager.addEventListener('pointerdown', (e) =>
 			{
 				// e.targetが「子要素自体」または「子要素の中身」である場合は、親の処理をスルーする
 				if (this.childLock)
 				{
-					if (this.header.contains(e.target) && e.target !== this.header)
+					if (this.drager.contains(e.target) && e.target !== this.drager)
 					{
 						return; // ここで処理を終わらせれば、親の処理をスキップできます
 					}
 				}
 
 				// ポインターの入力をこの要素に固定する
-				this.header.setPointerCapture(e.pointerId);
+				this.drager.setPointerCapture(e.pointerId);
 
 				e.preventDefault();  //デフォルトの挙動（イベント）をキャンセルする
 				e.stopPropagation(); //親へイベントが伝わるのを止める！
@@ -116,7 +134,7 @@ class WindowController
 			});
 
 			//ヘッダーマウス移動
-			this.header.addEventListener('pointermove', (e) =>
+			this.drager.addEventListener('pointermove', (e) =>
 			{
 				if (this.isDragging)
 				{
@@ -128,10 +146,10 @@ class WindowController
 			});
 
 			//ヘッダーマウスアップ
-			this.header.addEventListener('pointerup', (e) =>
+			this.drager.addEventListener('pointerup', (e) =>
 			{
 				// ポインターの入力をこの要素に固定する
-				this.header.releasePointerCapture(e.pointerId);
+				this.drager.releasePointerCapture(e.pointerId);
 
 				this.isDragging = false;
 				this.isResizing = false;
@@ -141,7 +159,7 @@ class WindowController
 			//ブラウザ都合などで強制的にドラッグが中断された場合の後始末
 			//pointerup が呼ばれずに終わるケースがあるため、これが無いと isDragging が
 			//true のまま固まってしまい、次のドラッグがおかしくなることがある
-			this.header.addEventListener('pointercancel', (e) =>
+			this.drager.addEventListener('pointercancel', (e) =>
 			{
 				this.isDragging = false;
 				this.isResizing = false;
@@ -150,9 +168,9 @@ class WindowController
 		}
 
 		// 閉じるボタン
-		if (this.closebtn)
+		if (this.closer)
 		{
-			this.closebtn.addEventListener('click', (e) =>
+			this.closer.addEventListener('click', (e) =>
 			{
 				this.hide();
 
@@ -200,12 +218,12 @@ class WindowController
 
 				if (dir.includes('e'))
 				{
-					//★変更：固定値280 → this.minWidth
+					//固定値280 → this.minWidth
 					this.container.style.width = `${Math.max(this.minWidth, this.resizeStartW + dx)}px`;
 				}
 				if (dir.includes('s'))
 				{
-					//★変更：固定値180 → this.minHeight
+					//固定値180 → this.minHeight
 					this.container.style.height = `${Math.max(this.minHeight, this.resizeStartH + dy)}px`;
 				}
 				if (dir.includes('w'))
@@ -265,6 +283,11 @@ class WindowController
 		//CSSの transform: translateX(-50 %) が残っていると、left を上書きした後にさらにズレてしまうので、無効化する
 		this.container.style.transform = 'none';
 		return rect;
+	}
+
+	show(flg)
+	{
+		if (flg) this.restore(); else this.hide();
 	}
 
 	hide()
@@ -438,7 +461,7 @@ export function mouseup(e)
 
 //リサイズイベントを待つ
 // 画面のリサイズイベント完了を待つ非同期ヘルパー関数
-function waitForResize(timeout = 100)
+export function waitForResize(timeout = 100)
 {
 	return new Promise((resolve) =>
 	{

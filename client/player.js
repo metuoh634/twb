@@ -4,6 +4,7 @@ import * as utils2 from './utils2.js';
 import * as input from './input.js';
 import { canvas, ctx } from './engine.js';
 import { MAP_WIDTH, MAP_HEIGHT, camera } from './world.js';
+import * as world from './world.js';
 
 export let charactorName = "maximin";
 export let isSitting = false;				//立ち/座り
@@ -301,3 +302,17 @@ export function update(delta)
 	}
 }
 
+
+//マウス移動
+export function mousedown(e)
+{
+	// キャンバス上を左クリックしたら、その場所を目的地にして歩き出す
+	if (input.mouseInfo.left && e.target === canvas)
+	{
+		// 画面上のクリック位置(clientX/Y)にカメラのズレ(camera.x/y)を足して、マップ上の座標に変換する
+		const worldX = e.clientX + world.camera.x;
+		const worldY = e.clientY + world.camera.y;
+
+		setMoveTarget(worldX, worldY);
+	}
+}
