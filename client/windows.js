@@ -400,27 +400,20 @@ class WindowController
 	}
 
 	//ブラウザのアドレスを消して全画面表示 -1=auto ,1=full,2=解除
-	restoreFullScreen(flg = -1)
+	async restoreFullScreen(flg = -1)
 	{
-		//画面フルスクリーン
+		// フルスクリーン前の位置とサイズ割合を記憶
 		this.savePosition();
-		fullScreen(flg);
+
+		// フルスクリーン切替（完了を await で待つ）
+		await fullScreen(flg);
+
+		// 画面リサイズイベントの完了を待機
+		await waitForResize();
+
+		// 新しい画面サイズに基づいて位置を復元および補正
 		this.restorePosition();
 		this.insideScreen();
-
-		/*//こっちだと逆にダメ
-		this.savePosition();
-		fullScreen(flg);
-		// フルスクリーン解除はアニメーションを伴い非同期に完了するため、resizeイベント（画面サイズの変化完了）を待ってから復元処理を行う
-		this.container.addEventListener('resize', function onResize()
-		{
-			// 一度実行したらリスナーを削除しておく（毎回発火させないため）
-			this.container.removeEventListener('resize', onResize);
-
-			this.restorePosition();
-			this.insideScreen();
-		});*/
-
 	}
 }
 
@@ -442,33 +435,49 @@ export function mouseup(e)
 	//windows.forEach(win => win.handleMouseUp(e));
 }
 
+//リサイズイベントを待つ
+// 画面のリサイズイベント完了を待つ非同期ヘルパー関数
+function waitForResize(timeout = 100)
+{
+	return new Promise((resolve) =>
+	{
+		const onResize = () =>
+		{
+			window.removeEventListener('resize', onResize);
+			resolve();
+		};
+		window.addEventListener('resize', onResize);
+
+		// リサイズイベントがすでに発火済み、または発火しない場合のためのタイマー
+		setTimeout(() =>
+		{
+			window.removeEventListener('resize', onResize);
+			resolve();
+		}, timeout);
+	});
+}
 
 //ブラウザのアドレスを消して全画面表示 -1=auto ,1=full,2=解除
-export function fullScreen(flg = -1)
+export async function fullScreen(flg = -1)
 {
 	//自動
 	if (flg == -1)
 		flg = !(document.fullscreenElement);
 
-	if (flg)
+	try
 	{
-		// documentElement(html全体)を全画面化する
-		// ※ユーザーのクリックがきっかけでないと動かないので注意
-		document.documentElement.requestFullscreen()
-			.catch((err) =>
-			{
-				// 全画面化に失敗した場合(未対応ブラウザなど)はエラーを表示
-				console.log("全画面化できませんでした:", err);
-			});
+		if (flg)
+		{
+			// Promise を返して待機可能にする
+			await document.documentElement.requestFullscreen();
+		}
+		else if (document.fullscreenElement)
+		{
+			await document.exitFullscreen();
+		}
 	}
-	else
+	catch (err)
 	{
-		// exitFullscreen()を呼ぶと、今の全画面表示を解除できる
-		document.exitFullscreen()
-			.catch((err) =>
-			{
-				// すでに全画面でない場合などはエラーになることがある
-				console.log("解除に失敗しました:", err);
-			});
+		console.log("全画面化の切替に失敗しました:", err);
 	}
 }
