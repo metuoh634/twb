@@ -17,6 +17,7 @@ TWチャットバー
 	width: 520px;
 	height: 112px;
 
+	/*数値が大きいほど手前に表示されます*/
 	z-index: 2;
 
 	/* 子要素（topBar/chatLog/chatUnder）を縦に並べ、chatLogだけが高さの伸び縮みを受け持てるようにする */
@@ -232,7 +233,8 @@ TWチャットバー
 
 /* #chatUnder の直下にあるすべての要素に margin: 1px を適用 */
 #chatUnder > * {
-	margin: 0.5px;
+	margin-left: 1px;
+	margin-right: 1px;
 }
 
 /* 耳打ちユーザー*/
@@ -344,6 +346,64 @@ TWチャットバー
 }
 
 /* ==========================================================================
+チャット範囲選択ボタン
+ ==========================================================================
+*/
+#chatRange {
+	/*background-color: rgba(255, 0, 0, 0.658);*/
+
+	/* 画面上に位置を固定 */
+	position: absolute;
+	margin: 0;
+	padding: 0;
+	left: 4px;
+
+	/*#chatUnder > * {*/
+	margin-left: 1px;
+	margin-right: 1px;
+
+	/*(<chatUnder>33px-<btn>19px)/2=7*/
+	bottom: 7px;
+	width: 18px;
+	height: calc(19px*4);
+	/*表示時はdisplay: flex;*/
+	display: none;
+	/* 子要素（topBar/chatLog/chatUnder）を縦に並べ、chatLogだけが高さの伸び縮みを受け持てるようにする */
+	flex-direction: column;
+
+	/*数値が大きいほど手前に表示されます*/
+	z-index: 3;
+}
+
+.chatRangeBtn {
+	width: 18px;
+	height: 19px;
+	/*background-color: rgba(25, 0, 255, 0.658);*/
+	background-repeat: no-repeat;
+	/* 画像が要素からはみ出したり伸びたりしないようにする */
+	/*background-size: contain;*/
+	/*位置が真ん中になる？*/
+	background-position: top left;
+
+	cursor: pointer;
+}
+
+#chatRangeClub {
+	background-image: url("../assets/ui/ChatBar/club.png");
+}
+#chatRangeWhisper {
+	background-image: url("../assets/ui/ChatBar/whisper.png");
+}
+#chatRangeParty {
+	background-image: url("../assets/ui/ChatBar/party.png");
+}
+#chatRangeOpen {
+	background-image: url("../assets/ui/ChatBar/open.png");
+}
+
+
+
+/* ==========================================================================
    チャットバブル
    ========================================================================== */
 .chat-bubble {
@@ -399,6 +459,7 @@ TWチャットバー
 	bottom: -6px;
 	left: 50%;
 	transform: translateX(-50%);
+	/*数値が大きいほど手前に表示されます*/
 	z-index: 1;
 
 	border-left: 7px solid transparent;

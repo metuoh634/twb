@@ -47,10 +47,43 @@ async function init()
 ///////イベント//////////
 
 const chatOpen = document.getElementById("chatOpen");
+const chatMail = document.getElementById("chatMail");
+const chatMemo = document.getElementById("chatMemo");
+const chatMessanger = document.getElementById("chatMessanger");
+const chatDM = document.getElementById("chatDM");
+const chatFixedText = document.getElementById("chatFixedText");
+const chatEmote = document.getElementById("chatEmote");
+
+const chatRange = document.getElementById("chatRange");
+
 chatOpen.addEventListener('click', (e) =>
 {
-	sub.fullScreen();
+	e.stopPropagation(); // ドキュメント側へのクリックイベント伝播を防止
+
+	const rect = chatOpen.getBoundingClientRect();
+	const x = rect.left;
+	const y = rect.top - (19 * 3);
+
+	chatRange.style.display = 'flex';
+	/*	chatRange.style.left = `${x}px`;
+		chatRange.style.top = `${y}px`;
+	*/
+	//sub.fullScreen();
 });
+
+// chatRange内のボタンをクリックしたとき、または外側をクリックしたときに非表示にする
+document.addEventListener('click', (e) =>
+{
+	if (chatRange.style.display === 'flex')
+	{
+		// クリックされた要素が chatRange 内のボタン、または chatRange の外側であれば非表示
+		if (e.target.classList.contains('chatRangeBtn') || !chatRange.contains(e.target))
+		{
+			chatRange.style.display = 'none';
+		}
+	}
+});
+
 
 // バーチャル十字キー（スマホの画面左半分でのタッチ操作）
 //{ passive: false } にしているのは、e.preventDefault() を効かせるためです（passive: true だと preventDefault が無視されます）。
