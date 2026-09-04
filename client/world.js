@@ -1,4 +1,4 @@
-import * as utils2 from '../shared/utils2.js';
+import * as utils2 from './utils2.js';
 import { canvas, ctx } from './engine.js';
 
 // マップ設定

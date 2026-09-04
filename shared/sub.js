@@ -1,3 +1,12 @@
+//import path from 'path'; //ブラウザ環境では使えない
+//import fs from 'fs';//ブラウザ環境では使えない
+
+//ブラウザ環境のみ
+let chatLog = null;
+if (typeof document !== 'undefined')
+	chatLog = document.getElementById('chatLog');
+
+
 // 文字色・背景色などのエスケープコード一覧
 // ※Pythonの \033 とJavaScriptの \x1b は同じ「ESCシーケンス」を表す書き方です
 const COLORS = {
@@ -132,8 +141,6 @@ export function typeConsole(type)
 	return consoleFunc;
 }
 
-const chatLog = document.getElementById('chatLog');
-
 export function addLog(type, message, logArea = chatLog)
 {
 	//タイプコンソール取得
@@ -182,4 +189,33 @@ export function roundTo(value, digits)
 export function nearlyEqual(a, b, epsilon = 1e-4)
 {
 	return Math.abs(a - b) <= epsilon;
+}
+
+//拡張子変更
+export function changeExt(filePath, newExt)
+{
+	// .の有無を吸収してフォーマット（例: "png" -> ".png"）
+	const ext = newExt.startsWith('.') ? newExt : `.${newExt}`;
+
+	// 末尾の拡張子部分（.xxx）を新しい拡張子に置換
+	return filePath.replace(/\.[^/.]+$/, ext);
+}
+
+//ファイル名だけ取得
+export function getFileName(filePath)
+{
+	return filePath.split(/[/\\]/).pop();
+}
+
+//ファイルの有無
+export async function checkFileExists(url)
+{
+	try
+	{
+		const response = await fetch(url, { method: 'HEAD' });
+		return response.ok; // 200〜299ならtrue
+	} catch
+	{
+		return false;
+	}
 }

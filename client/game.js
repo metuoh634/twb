@@ -1,7 +1,7 @@
 import { print, addLog } from '../shared/sub.js';
-import * as utils2 from '../shared/utils2.js';
 import * as sub from '../shared/sub.js';
 
+import * as utils2 from './utils2.js';
 import * as windows from './windows.js';
 import { canvas, ctx } from './engine.js';
 import * as engine from './engine.js';
@@ -11,6 +11,7 @@ import { keys, keysPress, mouseInfo } from './input.js';
 import * as world from './world.js';
 import * as player from './player.js';
 import * as chat from './chat.js';
+import * as sound from './sound.js';
 
 // プログレスバーとテキストの更新
 let loadedCount = 0;
@@ -69,12 +70,23 @@ chatOpen.addEventListener('click', (e) =>
 		chatRange.style.top = `${y}px`;*/
 });
 
+//BGM再生
+chatEmote.addEventListener('click', (e) =>
+{
+	let fileBGM = sub.getFileName(world.path);
+	fileBGM = sub.changeExt(fileBGM, "mp3");
+	fileBGM = sound.pathBGM + "/" + fileBGM;
+	sound.setBGM(fileBGM).play();
+
+});
+
+
 // chatRange非表示
 document.addEventListener('click', (e) =>
 {
+	// クリックされた要素が chatRange 内のボタン、または chatRange の外側であれば非表示
 	if (chatRange.style.display === 'flex')
 	{
-		// クリックされた要素が chatRange 内のボタン、または chatRange の外側であれば非表示
 		if (e.target.classList.contains('chatRangeBtn') || !chatRange.contains(e.target))
 		{
 			chatRange.style.display = 'none';

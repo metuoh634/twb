@@ -1,6 +1,6 @@
 import { print, addLog } from '../shared/sub.js';
-import * as utils2 from '../shared/utils2.js';
 
+import * as utils2 from './utils2.js';
 import * as input from './input.js';
 import { canvas, ctx } from './engine.js';
 import { MAP_WIDTH, MAP_HEIGHT, camera } from './world.js';

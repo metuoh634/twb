@@ -6,6 +6,7 @@ import fsp from 'node:fs/promises';
 import path from 'path';
 
 import { PORT } from '../shared/config.js';
+import { print } from '../shared/sub.js';
 export let server = null;
 export let routeAPI = null;
 
@@ -48,6 +49,8 @@ const mimeTypes = {
 	'.webp': 'image/webp',
 	'.glb': 'model/gltf-binary',
 	".hdr": 'image/vnd.radiance',
+	'.mp3': 'audio/mpeg',
+	'.wav': 'audio/wav',
 };
 
 //httpserverメモ
@@ -121,7 +124,7 @@ function callAPI(req, res, body)
 }
 
 //log & レスポンス
-function plainWrite(res, code, message, results, contentType = 'application/json; charset=utf-8')
+function plainWrite(res, code, message, results, contentType = { 'Content-Type': 'application/json; charset=utf-8' })
 {
 	//console
 	if (message)
@@ -129,13 +132,15 @@ function plainWrite(res, code, message, results, contentType = 'application/json
 		//if (results)
 		//	console.log(JSON.stringify({ message: message, results: results }));
 		//else
-		console.log(message);
+
+		//console.log(message);
+		print(code >= 200 && code <= 299 ? ("info") : ("error"), message);
 	}
 
 	//このレスポンスは、もうヘッダーを送信し終えたかどうか
 	if (!res.headersSent)
 	{
-		res.writeHead(code, { 'Content-Type': contentType });
+		res.writeHead(code, contentType);
 
 		//contents設定の場合はそのまま返す
 		if (results && results.contents)
@@ -154,7 +159,7 @@ export function init(api)
 	//webサーバー立ち上げ
 	server = http.createServer(async (req, res) =>
 	{
-		console.log(req.method, req.url);
+		print("info", req.method, req.url);
 
 		try
 		{
@@ -162,11 +167,13 @@ export function init(api)
 			// Render/Koyebなどのホスティング先が「サーバーが生きているか」を定期的に確認しにくる場所、ファイルを読みに行く必要はない
 			if (req.url === '/health')
 			{
-				plainWrite(res, 200, 'OK', { contents: 'OK' }, 'text/plain; charset=utf-8');
+				plainWrite(res, 200, 'OK', { contents: 'OK' }, { 'Content-Type': 'text/plain; charset=utf-8' });
 				return;
 			}
-			// 1. 静的ファイルの配信（index.html, main.js, style.css など）
-			if (req.method === 'GET')
+
+			//GET 静的ファイルの配信（index.html, main.js, style.css など）
+			//HEADリクエストの場合は「ファイルの情報だけ」返して、中身（本文）は送らない
+			if (req.method === 'GET' || req.method === 'HEAD')
 			{
 				// 変更点: PUBLIC_DIR の配下に限定してパスを結合
 				//const safePath = path.normalize(reqPath).replace(/^(\.\.[\/\\])+/, '');
@@ -206,7 +213,19 @@ export function init(api)
 					{
 						//ファイル読み込み(同期)、画像も問題なし
 						const content = await fsp.readFile(filePath);
-						plainWrite(res, 200, '静的ファイル読み込み', { contents: content }, contentType);
+
+						// HEADリクエストの場合は「ファイルの情報だけ」返して、中身（本文）は送らない
+						if (req.method === 'HEAD')
+						{
+							plainWrite(res, 200, '静的ファイル読み込み', null,
+								{
+									'Content-Type': contentType,
+									'Content-Length': content.length // ファイルサイズを教えてあげる
+								});
+							return;
+						}
+
+						plainWrite(res, 200, '静的ファイル読み込み', { contents: content }, { 'Content-Type': contentType });
 						return;
 					}
 					catch (e)
@@ -214,6 +233,11 @@ export function init(api)
 						plainWrite(res, 404, 'Content-Type Not Found' + e.message);
 						return
 					}
+				}
+				else
+				{
+					plainWrite(res, 404, 'Content-Type Not Found');
+					return;
 				}
 
 				//mimeTypesに無い拡張子はここで404を返す（応答なしハングを防ぐ）
@@ -251,6 +275,6 @@ export function init(api)
 	//Render/Koyebともに「0.0.0.0（すべての受信を待ち受ける）にバインドすること」を推奨しています
 	server.listen(PORT, '0.0.0.0', () =>
 	{
-		console.log(`サーバーが起動しました: http://localhost:${PORT}`);
+		print("green", `✅ webサーバーが起動しました: http://localhost:${PORT}`);
 	});
 }
