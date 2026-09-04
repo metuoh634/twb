@@ -84,7 +84,7 @@
 
 		/* ==========================================メインビジュアル (Hero)========================================== */
 		.hero-section {
-			height: 400px;
+			height: 300px;
 			/* 本来はここにテイルズ風のドット絵や美しい空の背景画像を入れます */
 			background: url('/assets/header.jpg') no-repeat center/cover;
 			border-bottom: 1px solid #3a4d66;
@@ -139,8 +139,8 @@
 			margin: 40px auto;
 			padding: 0 20px;
 			display: grid;
-			/* 3列分の幅の比率を指定（左:中央:右 = 3:4:3） */
-			grid-template-columns: 3fr 4fr 3fr;
+			/* 3列分の幅の比率を指定（左:中央:右 = 2:6:2 に変更して中央のWhat's Newを広くした） */
+			grid-template-columns: 2fr 6fr 2fr;
 			gap: 30px;
 		}
 
@@ -365,7 +365,7 @@
 		<section class="column-left">
 
 			<section class="box-window">
-				<h3 class="box-title">Character Select</h3>
+				<h3 class="box-title">ゲームスタート</h3>
 				<form class="character-form">
 					<div class="form-group">
 						<label for="char-name">キャラクター名</label>
@@ -381,6 +381,14 @@
 					<button type="submit" class="btn-submit">決定</button>
 				</form>
 			</section>
+
+			<div class="box-window sm-box">
+				<h3 class="box-title">BGM Player</h3>
+				<p class="bgm-title">♪ Second Run (Cover Ver.)</p>
+				<div class="player-controls">
+					<span>◀</span> <span>▶</span> <span>■</span>
+				</div>
+			</div>
 
 		</section>
 
@@ -400,13 +408,9 @@
 
 			<section class="box-window">
 				<h3 class="box-title">このサイト</h3>
-				<p>圧倒的世界観のテイルズウィーバーを完全にパクったやつ</p>
+				<p>圧倒的世界観のテイルズウィーバーを感じよう</p>
 				<p>「深く重厚なストーリー」と「キャラクターごとに異なる群像劇」、</p>
-				<p>美麗な2Dファンタジーの世界へようこそ・・・・・</p><br>
-				<p>テイルズウィーバーっぽい何かがあるだけのサイト</p>
-				<p>戦闘？無いんだなそれが</p>
-				<p>NPC？無いんだなそれが</p>
-				<p>敵？無いんだなそれが</p>
+				<p>美麗な2Dファンタジーの世界へようこそ</p>
 			</section>
 
 			<section class="box-window">
@@ -452,14 +456,6 @@
 					<p>ゼルナ<span start="2007/07/18" class="status online">Online</span></p>
 					<p>ローゼンバーグ<span start="2007/07/18" class="status online">Online</span></p>
 					<p>ミストラル<span start="2007/09/19" class="status online">Online</span></p>
-				</div>
-			</div>
-
-			<div class="box-window sm-box">
-				<h3 class="box-title">BGM Player</h3>
-				<p class="bgm-title">♪ Second Run (Cover Ver.)</p>
-				<div class="player-controls">
-					<span>◀</span> <span>■</span> <span>▶</span>
 				</div>
 			</div>
 		</aside>
