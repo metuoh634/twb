@@ -294,6 +294,7 @@ class WindowController
 		if (!this.container)
 			return;
 
+		/*
 		// 画面に対する現在の相対位置（割合: 0.0 ～ 1.0）を記録する変数
 		this._saveRelativePos = { xRate: 0.5, yRate: 0.5 };
 		this._saveRect = this.container.getBoundingClientRect();//相対位置
@@ -303,6 +304,21 @@ class WindowController
 		// 保存しておいた割合から一旦のpx位置を計算
 		this.newLeft = window.innerWidth * this._saveRelativePos.xRate;
 		this.newTop = window.innerHeight * this._saveRelativePos.yRate;
+		*/
+
+
+		// 画面に対する現在の相対位置（割合: 0.0 ～ 1.0）を記録する変数
+		this._saveRelativePos = { xRate: 0.5, yRate: 0.5 };
+		this._saveRect = this.container.getBoundingClientRect();//相対位置
+
+		// 「左端」ではなく「要素の中心点」が画面のどの割合の位置にあるかを記録する
+		// こうすることで、要素サイズや画面サイズが変わっても中心位置を正しく再現できる
+		const centerX = this._saveRect.left + this._saveRect.width / 2;
+		const centerY = this._saveRect.top + this._saveRect.height / 2;
+		this._saveRelativePos.xRate = centerX / window.innerWidth;
+		this._saveRelativePos.yRate = centerY / window.innerHeight;
+
+
 
 	}
 
@@ -312,8 +328,31 @@ class WindowController
 		if (!this.container)
 			return;
 
+		/*	
 		let newLeft = window.innerWidth * this._saveRelativePos.xRate;
-		let newTop = window.innerHeight * this._saveRelativePos.yRate;
+			let newTop = window.innerHeight * this._saveRelativePos.yRate;
+	
+			// bottom/right や transform による影響を打ち消す場合は以下を指定
+			this.container.style.bottom = 'auto';
+			this.container.style.transform = 'none';
+	
+			// CSSのスタイルを更新（transform等で中央寄せしている場合は記述に合わせて調整）
+			this.container.style.left = `${newLeft}px`;
+			this.container.style.top = `${newTop}px`;
+		*/
+
+
+
+		// 現在の要素サイズを取得（中心位置からleft/topへ逆算するために必要）
+		const rect = this.container.getBoundingClientRect();
+
+		// 保存しておいた「中心点の割合」から、現在の画面サイズにおける中心座標を求める
+		const centerX = window.innerWidth * this._saveRelativePos.xRate;
+		const centerY = window.innerHeight * this._saveRelativePos.yRate;
+
+		// 中心座標から要素幅・高さの半分を引いて、left/topの値に変換する
+		let newLeft = centerX - rect.width / 2;
+		let newTop = centerY - rect.height / 2;
 
 		// bottom/right や transform による影響を打ち消す場合は以下を指定
 		this.container.style.bottom = 'auto';
@@ -331,7 +370,7 @@ class WindowController
 			return;
 
 		// visualViewportが使える場合は、アドレスバー等を除いた実際の表示領域の高さを使う
-		const currentWidth = window.visualViewport ? window.visualViewport.width : window.innerHeight;
+		const currentWidth = window.visualViewport ? window.visualViewport.width : window.innerWidth;
 		const currentHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
 
 		// style.leftは"100px"のような文字列なので、parseFloatで数値に変換する
@@ -369,7 +408,7 @@ class WindowController
 		this.restorePosition();
 		this.insideScreen();
 
-		/*こっちだと逆にダメ
+		/*//こっちだと逆にダメ
 		this.savePosition();
 		fullScreen(flg);
 		// フルスクリーン解除はアニメーションを伴い非同期に完了するため、resizeイベント（画面サイズの変化完了）を待ってから復元処理を行う
@@ -380,8 +419,8 @@ class WindowController
 
 			this.restorePosition();
 			this.insideScreen();
-		});
-		*/
+		});*/
+
 	}
 }
 
