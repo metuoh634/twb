@@ -286,6 +286,103 @@ class WindowController
 		//方法2 画面上に表示されていれば offsetParent は null 以外になる
 		return this.container.offsetParent !== null;
 	}
+
+
+	//位置記憶
+	savePosition()
+	{
+		if (!this.container)
+			return;
+
+		// 画面に対する現在の相対位置（割合: 0.0 ～ 1.0）を記録する変数
+		this._saveRelativePos = { xRate: 0.5, yRate: 0.5 };
+		this._saveRect = this.container.getBoundingClientRect();//相対位置
+		this._saveRelativePos.xRate = this._saveRect.left / window.innerWidth;
+		this._saveRelativePos.yRate = this._saveRect.top / window.innerHeight;
+
+		// 保存しておいた割合から一旦のpx位置を計算
+		this.newLeft = window.innerWidth * this._saveRelativePos.xRate;
+		this.newTop = window.innerHeight * this._saveRelativePos.yRate;
+
+	}
+
+	//位置復元
+	restorePosition()
+	{
+		if (!this.container)
+			return;
+
+		let newLeft = window.innerWidth * this._saveRelativePos.xRate;
+		let newTop = window.innerHeight * this._saveRelativePos.yRate;
+
+		// bottom/right や transform による影響を打ち消す場合は以下を指定
+		this.container.style.bottom = 'auto';
+		this.container.style.transform = 'none';
+
+		// CSSのスタイルを更新（transform等で中央寄せしている場合は記述に合わせて調整）
+		this.container.style.left = `${newLeft}px`;
+		this.container.style.top = `${newTop}px`;
+	}
+
+	//はみ出しを戻す
+	insideScreen()
+	{
+		if (!this.container)
+			return;
+
+		// visualViewportが使える場合は、アドレスバー等を除いた実際の表示領域の高さを使う
+		const currentWidth = window.visualViewport ? window.visualViewport.width : window.innerHeight;
+		const currentHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+
+		// style.leftは"100px"のような文字列なので、parseFloatで数値に変換する
+		let newLeft = parseFloat(this.container.style.left) || 0;
+		let newTop = parseFloat(this.container.style.top) || 0;
+
+		// はみ出し判定には要素自身の幅・高さが必要なので取得しておく
+		const rect = this.container.getBoundingClientRect();
+		const elemWidth = rect.width;
+		const elemHeight = rect.height;
+
+		// 画面内からはみ出ないように座標を補正 (0 ～ 画面幅-要素幅)
+		const maxLeft = Math.max(0, currentWidth - elemWidth);
+		const maxTop = Math.max(0, currentHeight - elemHeight);
+
+		newLeft = Math.min(Math.max(0, newLeft), maxLeft);
+		newTop = Math.min(Math.max(0, newTop), maxTop);
+
+		// bottom/right や transform による影響を打ち消す場合は以下を指定
+		this.container.style.bottom = 'auto';
+		this.container.style.transform = 'none';
+
+		// 補正後の位置を適用
+		this.container.style.left = `${newLeft}px`;
+		this.container.style.top = `${newTop}px`;
+
+	}
+
+	//ブラウザのアドレスを消して全画面表示 -1=auto ,1=full,2=解除
+	restoreFullScreen(flg = -1)
+	{
+		//画面フルスクリーン
+		this.savePosition();
+		fullScreen(flg);
+		this.restorePosition();
+		this.insideScreen();
+
+		/*こっちだと逆にダメ
+		this.savePosition();
+		fullScreen(flg);
+		// フルスクリーン解除はアニメーションを伴い非同期に完了するため、resizeイベント（画面サイズの変化完了）を待ってから復元処理を行う
+		this.container.addEventListener('resize', function onResize()
+		{
+			// 一度実行したらリスナーを削除しておく（毎回発火させないため）
+			this.container.removeEventListener('resize', onResize);
+
+			this.restorePosition();
+			this.insideScreen();
+		});
+		*/
+	}
 }
 
 
@@ -304,4 +401,35 @@ export function mouseup(e)
 
 	//全ウィンドウクラスの移動・リサイズ
 	//windows.forEach(win => win.handleMouseUp(e));
+}
+
+
+//ブラウザのアドレスを消して全画面表示 -1=auto ,1=full,2=解除
+export function fullScreen(flg = -1)
+{
+	//自動
+	if (flg == -1)
+		flg = !(document.fullscreenElement);
+
+	if (flg)
+	{
+		// documentElement(html全体)を全画面化する
+		// ※ユーザーのクリックがきっかけでないと動かないので注意
+		document.documentElement.requestFullscreen()
+			.catch((err) =>
+			{
+				// 全画面化に失敗した場合(未対応ブラウザなど)はエラーを表示
+				console.log("全画面化できませんでした:", err);
+			});
+	}
+	else
+	{
+		// exitFullscreen()を呼ぶと、今の全画面表示を解除できる
+		document.exitFullscreen()
+			.catch((err) =>
+			{
+				// すでに全画面でない場合などはエラーになることがある
+				console.log("解除に失敗しました:", err);
+			});
+	}
 }

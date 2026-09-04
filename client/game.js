@@ -66,9 +66,13 @@ chatOpen.addEventListener('click', (e) =>
 
 	chatRange.style.display = 'flex';
 	/*	chatRange.style.left = `${x}px`;
-		chatRange.style.top = `${y}px`;
-	*/
-	//sub.fullScreen();
+		chatRange.style.top = `${y}px`;*/
+});
+
+chatEmote.addEventListener('click', (e) =>
+{
+	//画面フルスクリーン
+	windows.chatWindow.restoreFullScreen();
 });
 
 // chatRange内のボタンをクリックしたとき、または外側をクリックしたときに非表示にする
