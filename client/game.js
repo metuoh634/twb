@@ -22,7 +22,6 @@ const progressBar = document.getElementById('progress-bar');
 function updateProgress()
 {
 	loadedCount++;
-
 	const percentage = Math.floor((loadedCount / loadTotal) * 100);
 	loadingText.textContent = `Loading... ${percentage}%`;
 	progressBar.style.width = `${percentage}%`;
@@ -283,7 +282,9 @@ function showModelDebugInfo()
 
 	const div = document.getElementById('debugInfo');
 
-	div.textContent = "[Model Debug Info]"
+	div.textContent =
+		"[Debug Info]"
+		+ "\n width:" + canvas.width + " height:" + canvas.height
 		+ "\n[World]"
 		+ "\n camera.x:" + world.camera.x.toFixed(3) + " camera.y:" + world.camera.y.toFixed(3)
 		+ "\n[Player]"

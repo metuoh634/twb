@@ -25,6 +25,14 @@ TWチャットバー
 	flex-direction: column;
 }
 
+/* スマホ向けのスタイル（画面幅が 768px 以下の場合） */
+/*@media (max-width: 500px) {
+	.container {
+		width: 320px;
+		height: 80px;
+	}
+}*/
+
 /* #chatArea の直下にあるすべての要素に margin: 1px を適用 */
 #chatArea > * {
 	margin: 0;
