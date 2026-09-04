@@ -290,6 +290,17 @@ class WindowController
 		if (flg) this.restore(); else this.hide();
 	}
 
+	show(flg = true)
+	{
+		if (flg === -1)
+			flg = !this.isVisible();
+
+		if (flg)
+			this.container.style.display = this.defaultDisplay;
+		else
+			this.hide();
+	}
+
 	hide()
 	{
 		this.container.style.display = 'none';

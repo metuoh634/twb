@@ -76,7 +76,7 @@ chatOpen.addEventListener('click', (e) =>
 //デバッグ表示
 chatMail.addEventListener('click', (e) =>
 {
-	windows.show(debugInfo, !windows.isVisible(debugInfo));
+	windows.debugInfo.show(-1);
 });
 
 
@@ -124,17 +124,9 @@ document.addEventListener('keydown', (e) =>
 	if (chat.SendChat(e))//送信したらtrue
 	{
 	}
-	else if (e.key === "c")
+	else if (e.key.toLowerCase() === "c")
 	{
-		if (windows.chatWindow.isVisible())
-		{
-			windows.chatWindow.hide();
-			//engine.canvas.focus();
-		}
-		else
-		{
-			windows.chatWindow.restore();
-		}
+		windows.chatWindow.show(-1);
 	}
 	else
 	{
