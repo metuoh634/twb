@@ -1,6 +1,7 @@
 import { fileURLToPath } from 'url'; // パスとURLを相互変換するための標準機能、isMainModule用
 import { WebSocketServer } from 'ws';
 
+import { print } from '../shared/sub.js';
 import { PACKET_TYPE, PORT } from '../shared/config.js';
 //import * as web from './web.js';
 
@@ -19,14 +20,14 @@ export function init(server)
 	// サーバーが正常に「待ち受け状態」になったら実行
 	wss.on('listening', () =>
 	{
-		console.log(`✅ WebSocketサーバーがポート (${PORT}) で起動しました！`);
+		print("green", `✅ WebSocketサーバーがポート (${PORT}) で起動しました！`);
 	});
 
 	wss.on('error', (err) =>
 	{
 		if (err.code === 'EADDRINUSE')
 		{
-			console.error(`❌ エラー: ポート ${PORT} は既に使われています。`);
+			print("error", `❌ エラー: ポート ${PORT} は既に使われています。`);
 			process.exit(1);
 		}
 	});
@@ -34,7 +35,7 @@ export function init(server)
 	// クライアントが接続してきたときの処理
 	wss.on('connection', (ws) =>
 	{
-		console.log('新しいプレイヤーが接続しました！');
+		print("white", '新しいプレイヤーが接続しました！');
 
 		//クライアントから受信
 		ws.on('message', (data) =>
@@ -54,7 +55,7 @@ export function init(server)
 
 				//if (chatMessageChars.length > 50)
 				//{
-				//	console.log("【検閲】50文字超過のバイナリチャットを破棄しました。");
+				//	print("warning","【検閲】50文字超過のバイナリチャットを破棄しました。");
 				//	return;
 				//}
 			}
@@ -68,7 +69,7 @@ export function init(server)
 			// 想定外
 			else 
 			{
-				console.log(`【警告】未定義のタイプ（${dataType}）を受信しました。'\n(${data})`);
+				print("warning", `【警告】未定義のタイプ（${dataType}）を受信しました。'\n(${data})`);
 				return;
 			}
 
@@ -85,7 +86,7 @@ export function init(server)
 		// 接続が切れたとき
 		ws.on('close', () =>
 		{
-			console.log('プレイヤーが切断しました。');
+			print("white", 'プレイヤーが切断しました。');
 		});
 	});
 

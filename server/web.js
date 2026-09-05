@@ -126,12 +126,8 @@ function callAPI(req, res, body)
 //log & レスポンス
 function plainWrite(res, code, message, contents = null, contentType = { 'Content-Type': 'application/json; charset=utf-8' })
 {
-	//console
 	if (message)
-	{
-		//console.log(message);
-		print(code >= 200 && code <= 299 ? ("info") : ("error"), message);
-	}
+		print(code === 304 ? ("cyan") : code >= 200 && code <= 299 ? ("info") : ("error"), message);
 
 	//このレスポンスは、もうヘッダーを送信し終えたかどうか
 	if (!res.headersSent)
@@ -229,7 +225,7 @@ export function init(api)
 						if (ifModifiedSince && ifModifiedSince === lastModified)
 						{
 							// 304を返すだけで、ファイルの中身は送らない
-							plainWrite(res, 304, null, null, {
+							plainWrite(res, 304, 'キャッシュを使用', null, {
 								'Last-Modified': lastModified,
 								'Cache-Control': 'no-cache'
 							});
