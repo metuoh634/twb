@@ -42,6 +42,10 @@ async function init()
 	loadingScreen.style.opacity = '0';
 	//loadingScreen.style.display = 'none';
 	setTimeout(() => { loadingScreen.style.display = 'none'; });
+
+
+	const charName = localStorage.getItem('charName');
+	const charType = localStorage.getItem('charType');
 }
 
 ///////イベント//////////

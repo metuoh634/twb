@@ -84,6 +84,8 @@
 
 		/* ==========================================メインビジュアル (Hero)========================================== */
 		.hero-section {
+			/*いったん非表示*/
+			display: none;
 			height: 300px;
 			/* 本来はここにテイルズ風のドット絵や美しい空の背景画像を入れます */
 			background: url('/assets/header.jpg') no-repeat center/cover;
@@ -366,7 +368,7 @@
 
 			<section class="box-window">
 				<h3 class="box-title">ゲームスタート</h3>
-				<form class="character-form">
+				<form class="character-form" id="character-form">
 					<div class="form-group">
 						<label for="char-name">キャラクター名</label>
 						<input type="text" id="char-name" class="form-input" placeholder="名前を入力してください">
@@ -378,7 +380,7 @@
 							<option value="tichiel">ティチエル</option>
 						</select>
 					</div>
-					<button type="submit" class="btn-submit">決定</button>
+					<button type="submit" class="btn-submit">Game Start</button>
 				</form>
 			</section>
 
@@ -465,6 +467,29 @@
 	<footer>
 		<p>&copy; 2026 Tales of Anaxiphia Project. Inspired by TalesBeaver.</p>
 	</footer>
+
+<script>
+    // ゲームスタートフォームの要素を取得しておく
+    const characterForm = document.getElementById('character-form');
+
+    // フォームが送信されたときに実行される処理
+    characterForm.addEventListener('submit', function (event) {
+        // 本来のフォーム送信(ページの再読み込み)を止める
+        event.preventDefault();
+
+        // 入力欄・選択欄から値を取り出す
+        const charName = document.getElementById('char-name').value;
+        const charType = document.getElementById('char-type').value;
+
+        // localStorageに保存する　
+		// 共有範囲　スキーム（プロトコル）: http / https ホスト（ドメイン）: example.com ポート番号: :80 / :443 など
+        localStorage.setItem('charName', charName);
+        localStorage.setItem('charType', charType);
+
+        // 保存が終わったらgame.htmlへ移動する
+        window.location.href = './game.html';
+    });
+</script>
 
 </body>
 
