@@ -116,7 +116,7 @@ function callAPI(req, res, body)
 			}
 			catch (e)
 			{
-				plainWrite(res, 400, "APIエラーで終了しました" + e.message, null);
+				plainWrite(res, 400, "APIエラーで終了しました" + e.message);
 			}
 		}
 	}
@@ -124,15 +124,11 @@ function callAPI(req, res, body)
 }
 
 //log & レスポンス
-function plainWrite(res, code, message, results, contentType = { 'Content-Type': 'application/json; charset=utf-8' })
+function plainWrite(res, code, message, contents = null, contentType = { 'Content-Type': 'application/json; charset=utf-8' })
 {
 	//console
 	if (message)
 	{
-		//if (results)
-		//	console.log(JSON.stringify({ message: message, results: results }));
-		//else
-
 		//console.log(message);
 		print(code >= 200 && code <= 299 ? ("info") : ("error"), message);
 	}
@@ -142,14 +138,15 @@ function plainWrite(res, code, message, results, contentType = { 'Content-Type':
 	{
 		res.writeHead(code, contentType);
 
-		// contents設定の場合はそのまま返す
-		if (results && results.contents)
-			res.end(results.contents);
 		// 304(Not Modified)は仕様上ボディを送らない
-		else if (code === 304)
+		if (code === 304)
 			res.end();
-		else
-			res.end(JSON.stringify({ code: code, message: message, results: results }));
+		//Bufferや文字列は生データとしてそのまま返す（静的ファイル・health用）
+		else if (Buffer.isBuffer(contents) || typeof contents === 'string')
+			res.end(contents);
+		//それ以外（オブジェクトやnullなど）はJSON化して返す
+		else if (contents)
+			res.end(JSON.stringify({ code: code, message: message, contents: contents }));
 	}
 }
 
@@ -162,15 +159,21 @@ export function init(api)
 	//webサーバー立ち上げ
 	server = http.createServer(async (req, res) =>
 	{
-		print("info", req.method, req.url);
+		//ブラウザ「ヒューリスティックキャッシュ」、Last-Modifiedだけを付けてCache - Controlを付けなかった場合、ブラウザはRFC 7234で決められたヒューリスティック（推測）キャッシュというルールを使います
+		//何も指定しない	ブラウザが独自判断でサーバーに聞きにも来ない、ここに来ることさえなくなる、
+		//Cache - Control: no - cache	毎回サーバーに「変わってない？」と確認しにくる（304を活用できる）
+		//Cache - Control: no - store	毎回まるごと再ダウンロード（開発中の確認向け）
 
 		try
 		{
+			//ログ
+			print("info", [req.method, req.url].filter(Boolean).join(''));
+
 
 			// Render/Koyebなどのホスティング先が「サーバーが生きているか」を定期的に確認しにくる場所、ファイルを読みに行く必要はない
 			if (req.url === '/health')
 			{
-				plainWrite(res, 200, 'OK', { contents: 'OK' }, { 'Content-Type': 'text/plain; charset=utf-8' });
+				plainWrite(res, 200, 'OK', 'OK', { 'Content-Type': 'text/plain; charset=utf-8' });
 				return;
 			}
 
@@ -226,7 +229,10 @@ export function init(api)
 						if (ifModifiedSince && ifModifiedSince === lastModified)
 						{
 							// 304を返すだけで、ファイルの中身は送らない
-							plainWrite(res, 304, null, null, { 'Last-Modified': lastModified });
+							plainWrite(res, 304, null, null, {
+								'Last-Modified': lastModified,
+								'Cache-Control': 'no-cache'
+							});
 							return;
 						}
 
@@ -241,21 +247,22 @@ export function init(api)
 								{
 									'Content-Type': contentType,
 									'Content-Length': content.length, // ファイルサイズを教えてあげる
-									'Last-Modified': lastModified
+									'Last-Modified': lastModified,
 								});
 							return;
 						}
 
-						plainWrite(res, 200, '静的ファイル読み込み', { contents: content },
+						plainWrite(res, 200, '静的ファイル読み込み', content,
 							{
 								'Content-Type': contentType,
-								'Last-Modified': lastModified // 次回比較用に日時を教える
+								'Last-Modified': lastModified, // 次回比較用に日時を教える
+								'Cache-Control': 'no-cache' // 「ヒューリスティックキャッシュ」になるので、毎回サーバーに確認させる（キャッシュ自体は使う）
 							});
 						return;
 					}
 					catch (e)
 					{
-						plainWrite(res, 404, 'Content-Type Not Found' + e.message);
+						plainWrite(res, 404, 'Content-Type Not Found ' + e.message);
 						return
 					}
 				}
