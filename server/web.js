@@ -142,9 +142,12 @@ function plainWrite(res, code, message, results, contentType = { 'Content-Type':
 	{
 		res.writeHead(code, contentType);
 
-		//contents設定の場合はそのまま返す
+		// contents設定の場合はそのまま返す
 		if (results && results.contents)
 			res.end(results.contents);
+		// 304(Not Modified)は仕様上ボディを送らない
+		else if (code === 304)
+			res.end();
 		else
 			res.end(JSON.stringify({ code: code, message: message, results: results }));
 	}
@@ -211,6 +214,23 @@ export function init(api)
 				{
 					try
 					{
+						// ファイルの更新日時を取得（中身を読まずにメタ情報だけ取れる）
+						const stat = await fsp.stat(filePath);
+						// Last-Modifiedヘッダー用の文字列に変換（例: "Fri, 05 Sep 2026 ..."）
+						const lastModified = stat.mtime.toUTCString();
+
+						// ブラウザが「前回もらった更新日時」を送ってきているか確認
+						const ifModifiedSince = req.headers['if-modified-since'];
+
+						// 前回と更新日時が同じ＝ファイルは変わっていない、と判断
+						if (ifModifiedSince && ifModifiedSince === lastModified)
+						{
+							// 304を返すだけで、ファイルの中身は送らない
+							plainWrite(res, 304, null, null, { 'Last-Modified': lastModified });
+							return;
+						}
+
+
 						//ファイル読み込み(同期)、画像も問題なし
 						const content = await fsp.readFile(filePath);
 
@@ -220,12 +240,17 @@ export function init(api)
 							plainWrite(res, 200, '静的ファイル読み込み', null,
 								{
 									'Content-Type': contentType,
-									'Content-Length': content.length // ファイルサイズを教えてあげる
+									'Content-Length': content.length, // ファイルサイズを教えてあげる
+									'Last-Modified': lastModified
 								});
 							return;
 						}
 
-						plainWrite(res, 200, '静的ファイル読み込み', { contents: content }, { 'Content-Type': contentType });
+						plainWrite(res, 200, '静的ファイル読み込み', { contents: content },
+							{
+								'Content-Type': contentType,
+								'Last-Modified': lastModified // 次回比較用に日時を教える
+							});
 						return;
 					}
 					catch (e)
